@@ -20,7 +20,7 @@ const getBadge = status => {
 export default function Index(){
     const {user,setLoad} = React.useContext(userContext);
     //subcategory,sales_unit,pack_unit
-    const fields = ['#','name','category','subcategory','type','price','pack_unit', 'sales_unit','action'];
+    const fields = ['#','name','price','quantity','action'];
     //
     const [productList,setProductList] = React.useState([]);
     const [id,setId] = React.useState(null);
@@ -46,14 +46,9 @@ export default function Index(){
               return {
                 '#' : index +1,
                 'name' : item.name,
-                'category' : item.category_name,
-                'subcategory': item.subcategory_name,
                 'price' : item.price,
-                'pack_unit': item.pack_unit,
-                'sales_unit':item.sales_unit,
                 'product_id' : item.id,
-                'type' : item.type
-                
+                'quantity' : item.stock_quantity,
               }
             }));
           }
@@ -95,16 +90,9 @@ export default function Index(){
                   return {
                     '#' : index +1,
                     'product_name' : item.name,
-                    'product_category' : item.category_name,
-                    //subcategory 
-                    'product_subcategory': item.subcategory_name,
-                    //
                     'price' : item.price,
-                    //sales_unit, pack_unit
-                    'pack_unit': item.pack_unit,
-                    'sales_unit':item.sales_unit,
-                    //
-                    'product_id' : item.id
+                    'product_id' : item.id,
+                    'quantity': item.stock_quantity
                   }
                 }));
               }

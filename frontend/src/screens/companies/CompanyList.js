@@ -17,12 +17,12 @@ const getBadge = status => {
 
 export default function CompanyList(){
     const {user} = React.useContext(userContext);
-    const fields = ['#','firm_name','email','mobile_number','status','action'];
-    const [companiesList,setCompaniesList] = React.useState([]);
+    const fields = ['#','restaurant_name','email','mobile_number','food_License_Number','password','GST Number','Address','status','action'];
+    const [restaurantList,setRestaurantList] = React.useState([]);
 
     React.useEffect(()=>{
       async function fetchList(){
-        const response = await fetch(url + 'companiesList',{
+        const response = await fetch(url + 'restaurantList',{
           method : 'GET',
           headers : {
             'Authorization' : user?.token
@@ -35,8 +35,8 @@ export default function CompanyList(){
 
           if (data.status === 200)
           {
-            console.log(data.companies_data)
-            setCompaniesList(data.companies_data)
+            console.log(data.restaurant_data)
+            setRestaurantList(data.restaurant_data)
           }
           else
           {
@@ -50,12 +50,12 @@ export default function CompanyList(){
     return(
         <section>
           <ToastContainer />
-            <Link to='/create/company'>Create Company</Link>
+            <Link to='/create/restaurant'>Create Restaurant</Link>
             <CCol xs="12" lg="12">
           <CCard>
             <CCardBody>
             <CDataTable
-              items={companiesList}
+              items={restaurantList}
               fields={fields}
               columnFilter
               tableFilter

@@ -22,14 +22,14 @@ export default function Index() {
   const [modal, setModal] = React.useState(false)
   const { user,setLoad } = React.useContext(userContext);
   //tax
-  const fields = ['#', 'name', 'email', 'mobile', 'tax_number','action'];
+  const fields = ['#', 'name', 'email', 'password', 'role','action'];
   //
-  const [customerList, setCustomerList] = React.useState([]);
+  const [userList, setUserList] = React.useState([]);
 
   React.useEffect(() => {
     setLoad(true)
     async function fetchData() {
-      const response = await fetch(url + 'clientlist', {
+      const response = await fetch(url + 'userlist', {
         method: 'GET',
         headers: {
           'Authorization': user?.token
@@ -40,16 +40,14 @@ export default function Index() {
         const data = await response.json();
         setLoad(false)
         if (data.status === 200) {
-          setCustomerList(data.client_list.map((item, index) => {
+          setUserList(data.user_list.map((item, index) => {
             return {
               '#': index + 1,
               'id': item.id,
               'name': item.name,
               'email': item.email,
-              'mobile': item.mobile,
-              //tax
-              'tax_number': item.tax
-              //
+              'password': item.password,
+              'role':item.role,
             }
           }))
         }
@@ -61,7 +59,7 @@ export default function Index() {
   const deleteEntry = () => {
     setLoad(true)
     async function deleteData() {
-      const response = await fetch(url + 'deleteclient/' + id, {
+      const response = await fetch(url + 'deleteuser/' + id, {
         method: 'GET',
         headers: {
           'Authorization': user?.token
@@ -75,7 +73,7 @@ export default function Index() {
         setModal(false);
         setId('');
         async function fetchData() {
-          const response = await fetch(url + 'clientlist', {
+          const response = await fetch(url + 'userlist', {
             method: 'GET',
             headers: {
               'Authorization': user?.token
@@ -86,16 +84,14 @@ export default function Index() {
             const data = await response.json();
             setLoad(false)
             if (data.status === 200) {
-              setCustomerList(data.client_list.map((item, index) => {
+              setUserList(data.user_list.map((item, index) => {
                 return {
                   '#': index + 1,
                   'id': item.id,
                   'name': item.name,
                   'email': item.email,
-                  'mobile': item.mobile,
-                   //tax
-                  'tax_number': item.tax_number
-                  // 
+                  'password': item.password,
+                  'role': item.role,
                 }
               }))
             }
@@ -119,12 +115,12 @@ export default function Index() {
     <section>
       <ToastContainer />
       <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
-      <Link to='/create/customer'>Create Customer</Link>
+      <Link to='/create/user'>Create User</Link>
       <CCol xs="12" lg="12">
         <CCard>
           <CCardBody>
             <CDataTable
-              items={customerList}
+              items={userList}
               fields={fields}
               columnFilter
               tableFilter
@@ -142,9 +138,13 @@ export default function Index() {
                       </CBadge>
                     </td>
                   ),
+                'role':
+                (item) =>
+                  (<td>{(item.role === "2") ? "Restaurant_admin" : "Staff"}</td>
+                  ),
                 'action': (item) => (
                   <td>
-                    <Link to={`/edit/customer/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
+                    <Link to={`/edit/user/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
                     <i style={{cursor:"pointer"}} onClick={()=>showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i>
                   </td>
                 )

@@ -16,28 +16,18 @@ const _nav =  [
     _children: [
       {
         _tag: 'CSidebarNavItem',
-        name: 'Category',
-        to: '/category',
+        name: 'Restaurant',
+        to: '/restaurantList',
       },
       {
         _tag: 'CSidebarNavItem',
-        name: 'SubCategory',
-        to: '/subcategory',
+        name: 'Users',
+        to: '/userList',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'Products',
         to: '/products',
-      },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Party',
-        to: '/partyList',
-      },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Customer',
-        to: '/customerList',
       },
       {
         _tag: 'CSidebarNavItem',

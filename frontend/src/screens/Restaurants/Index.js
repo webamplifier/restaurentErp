@@ -20,16 +20,16 @@ const getBadge = status => {
 export default function Index() {
   const { user,setLoad } = React.useContext(userContext);
   //tax
-  const fields = ['#', 'name', 'email', 'mobile', 'tax_number', 'action'];
+  const fields = ['#', 'name', 'email', 'password', 'mobile', 'food_license_number', 'GST','action'];
   //
-  const [partyList, setPartyList] = React.useState([]);
+  const [restaurantList, setRestaurantList] = React.useState([]);
   const [id, setId] = React.useState(null);
   const [modal, setModal] = React.useState(false)
 
   React.useEffect(() => {
     setLoad(true)
     async function fetchData() {
-      const response = await fetch(url + 'partylist', {
+      const response = await fetch(url + 'restaurantlist', {
         method: 'GET',
         headers: {
           'Authorization': user?.token
@@ -41,14 +41,15 @@ export default function Index() {
 
         if (data.status === 200) {
           setLoad(false)
-          setPartyList(data.party_list.map((item, index) => {
+          setRestaurantList(data.party_list.map((item, index) => {
             return {
               '#': index + 1,
               'id': item.id,
               'name': item.name,
               'email': item.email,
               'mobile': item.mobile,
-              'tax_number': item.tax  
+              'food_license_number': item.food_license_number,
+              'GST': item.GST,
             }
           }))
         }
@@ -61,7 +62,7 @@ export default function Index() {
   const deleteEntry = () => {
     setLoad(true)
     async function deleteData() {
-      const response = await fetch(url + 'deleteparty/' + id, {
+      const response = await fetch(url + 'deleterestaurant/' + id, {
         method: 'GET',
         headers: {
           'Authorization': user?.token
@@ -74,7 +75,7 @@ export default function Index() {
         setModal(false);
         setId('');
         async function fetchData() {
-          const response = await fetch(url + 'partylist', {
+          const response = await fetch(url + 'restaurantlist', {
             method: 'GET',
             headers: {
               'Authorization': user?.token
@@ -86,14 +87,15 @@ export default function Index() {
     
             if (data.status === 200) {
               setLoad(false)
-              setPartyList(data.party_list.map((item, index) => {
+              setRestaurantList(data.restaurant_list.map((item, index) => {
                 return {
                   '#': index + 1,
                   'id': item.id,
                   'name': item.name,
                   'email': item.email,
                   'mobile': item.mobile,
-                  'tax_number': item.tax  
+                  'food_license_number': item.food_license_number,
+                  'GST': item.GST,
                 }
               }))
             }
@@ -118,12 +120,12 @@ export default function Index() {
     <section>
       <ToastContainer />
       <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
-      <Link to='/create/party'>Create Party</Link>
+      <Link to='/create/restaurant'>Create Restaurant</Link>
       <CCol xs="12" lg="12">
         <CCard>
           <CCardBody>
             <CDataTable
-              items={partyList}
+              items={restaurantList}
               fields={fields}
               columnFilter
               tableFilter
@@ -143,7 +145,7 @@ export default function Index() {
                   ),
                 'action': (item) => (
                   <td>
-                    <Link to={`/edit/party/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
+                    <Link to={`/edit/restaurant/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
                     <i style={{ cursor: "pointer" }} onClick={() => showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i>
                   </td>
                 )

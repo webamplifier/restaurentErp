@@ -10,11 +10,8 @@ export default function Edit() {
     const { user,setLoad } = React.useContext(userContext);
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
-    const [mobile, setMobile] = React.useState('');
-    const [address, setAddress] = React.useState('');
-    //tax
-    const [taxNumber, setTaxNumber] = React.useState('');
-    //
+    const [password,setPassword] =React.useState('');
+    const [role, setRole] = React.useState('');
 
     const handleSubmit = e => {
         setLoad(true)
@@ -23,13 +20,9 @@ export default function Edit() {
             const formData = new FormData();
             formData.append('name', name);
             formData.append('email', email);
-            formData.append('mobile', mobile);            
-            formData.append('address', address);
-            //tax
-            formData.append('tax_number', taxNumber);
-            //
-            
-            const response = await fetch(url + 'updateclient/' + id, {
+            formData.append('password', password);
+            formData.append('role', role);
+            const response = await fetch(url + 'updateuser/' + id, {
                 method: 'POST',
                 headers: {
                     'Authorization': user?.token
@@ -41,7 +34,7 @@ export default function Edit() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
-                    return window.location = window.location.origin + '/#/customerList'
+                    return window.location = window.location.origin + '/#/userList'
                 } else {
                     toast.error(data.message)
                 }
@@ -55,7 +48,7 @@ export default function Edit() {
     React.useEffect(() => {
         setLoad(true)
         async function fetchData() {
-            const response = await fetch(url + 'clientById/' + id, {
+            const response = await fetch(url + 'userById/' + id, {
                 method: 'GET',
                 headers: {
                     'Authorization': user.token
@@ -65,14 +58,11 @@ export default function Edit() {
             if (response.ok === true) {
                 const data = await response.json();
                 setLoad(false)
-                const party_detail = data.client_detail;
-                setName(party_detail.name);
-                setEmail(party_detail.email);
-                setMobile(party_detail.mobile);
-                setAddress(party_detail.address);
-                //tax
-                setTaxNumber(party_detail.tax)
-                //
+                const user_detail = data.user_detail;
+                setName(user_detail.name);
+                setEmail(user_detail.email);
+                setPassword(user_detail.password);
+                setRole((user_detail.role==="2") ? "Restaurant_admin" : "Staff");
             }
         }
         fetchData();
@@ -82,7 +72,7 @@ export default function Edit() {
         <div className="container create-page-main-section">
             <ToastContainer />
             <form onSubmit={e => handleSubmit(e)}>
-                <div className='p-sm-5 create-form-field'>
+            <div className='p-sm-5 create-form-field'>
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Name:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
@@ -90,32 +80,23 @@ export default function Edit() {
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="inputPassword" class="col-sm-2 col-form-label">Email:</label>
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Email:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
                             <input value={email} onChange={e => setEmail(e.target.value)} type="email" class="form-control" id="inputPassword" />
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="inputPassword" class="col-sm-2 col-form-label">Mobile No:</label>
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Password:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
-                            <input value={mobile} onChange={e => setMobile(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                            <input value={password} onChange={e => setPassword(e.target.value)} type="password" class="form-control" id="inputPassword" />
                         </div>
                     </div>
-                    {/* tax */}
                     <div class="form-group row">
-                        <label for="inputPassword" class="col-sm-2 col-form-label">Tax No:</label>
-                        <div class="d-flex align-items-sm-center col-sm-10">
-                            <input value={taxNumber} onChange={e => setTaxNumber(e.target.value)} type="text" class="form-control" id="inputPassword" />
-                        </div>
-                    </div>
-                    {/* // */}
-                    
-
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="exampleFormControlTextarea1">Address:</label>
-                        <div class="d-flex align-items-sm-center col-sm-10">
-                            <textarea value={address} onChange={e => setAddress(e.target.value)} class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                        </div>
+                    <label class="col-sm-2 col-form-label">Role:<span className='required-label'>*</span></label>
+                        <select className="form-control d-flex align-items-sm-center col-sm-10" value={role} onChange={e=>setRole(e.target.value)}>
+                            <option value="2" selected>Restaurant_admin</option>
+                            <option value="3">Staff</option>
+                            </select>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center create-catagory-btns">

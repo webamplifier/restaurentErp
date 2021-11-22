@@ -44,34 +44,23 @@ const User = React.lazy(() => import('./views/users/User'));
 const CompanyList = React.lazy(()=>import('./screens/companies/CompanyList'));
 const CreateCompany = React.lazy(()=>import('./screens/companies/CreateCompany'));
 const EditCompany = React.lazy(()=>import('./screens/companies/EditCompany'));
-const CategoryList = React.lazy(()=>import('./screens/Categories/index'));
-const CreateCategory = React.lazy(()=>import('./screens/Categories/create'));
-const EditCategory = React.lazy(()=>import('./screens/Categories/edit'));
 const ProductList = React.lazy(()=>import('./screens/Products/index'));
 const CreateProduct = React.lazy(()=>import('./screens/Products/create'));
 const EditProduct = React.lazy(()=>import('./screens/Products/edit'));
-const PartyList = React.lazy(()=>import('./screens/Party/Index'));
-const CreateParty = React.lazy(()=>import('./screens/Party/Create'));
-const EditParty = React.lazy(()=>import('./screens/Party/Edit'));
-const CustomerList = React.lazy(()=>import('./screens/Customer/Index'));
-const CreateCustomer = React.lazy(()=>import('./screens/Customer/Create'));
+
 const CreatePurchaseEntry = React.lazy(()=>import('./screens/Purchase Entry/Purchase/create'));
 const PurchaseReport = React.lazy(()=>import('./screens/Reports/PurchaseReport'));
 const EditPurchaseEntry = React.lazy(()=>import('./screens/Purchase Entry/Purchase/Edit'));
-const EditCustomer = React.lazy(()=>import('./screens/Customer/Edit'));
+
 const InventoryList = React.lazy(()=>import('./screens/Inventory/Index'));
 const PurchaseReturnEntry = React.lazy(()=>import('./screens/Purchase Entry/Purchase Return/create'));
 
 const SalesReport = React.lazy(()=>import('./screens/Reports/SalesReport'));
 const DayWiseSales = React.lazy(()=>import('./screens/Reports/DayWiseSales'));
-const createExpense = React.lazy(()=>import('./screens/Expense/create'))
-const editExpense = React.lazy(()=>import('./screens/Expense/Edit'))
-const expenseReport = React.lazy(()=>import('./screens/Reports/ExpenseReport'))
+const createExpense = React.lazy(()=>import('./screens/Expense/create'));
+const editExpense = React.lazy(()=>import('./screens/Expense/Edit'));
+const expenseReport = React.lazy(()=>import('./screens/Reports/ExpenseReport'));
 //subcategory Imports
-
-const SubCategoryList = React.lazy(()=>import('./screens/subCategories/Index'));
-const CreateSubCategory = React.lazy(()=>import('./screens/subCategories/Create'));
-const EditSubCategory = React.lazy(()=>import('./screens/subCategories/Edit'));
 const EditPurchaseReturn = React.lazy(()=>import('./screens/Purchase Entry/Purchase Return/edit'));
 const PurchaseReturnReport = React.lazy(()=>import('./screens/Reports/PurchaseReturnReport'));
 const CreateSalesEntry = React.lazy(()=>import('./screens/Sales/Sales Entry/Create'));
@@ -80,6 +69,18 @@ const CreateSalesReturnEntry = React.lazy(()=>import('./screens/Sales/Sales Retu
 const EditSalesReturnEntry = React.lazy(()=>import('./screens/Sales/Sales Return/Edit'));
 const SalesReturnReport = React.lazy(()=>import('./screens/Reports/SalesReturnReport'));
 const RecieptList = React.lazy(()=>import('./screens/Reciept/index'));
+
+//restaurant imports
+
+const RestaurantList = React.lazy(()=>import('./screens/Restaurants/Index'));
+const CreateRestaurant = React.lazy(()=>import('./screens/Restaurants/Create'));
+const EditRestaurant = React.lazy(()=>import('./screens/Restaurants/Edit'));
+
+//user imports
+
+const UserList = React.lazy(()=>import('./screens/User/Index'));
+const CreateUser = React.lazy(()=>import('./screens/User/Create'));
+const EditUser = React.lazy(()=>import('./screens/User/Edit'));
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -128,20 +129,12 @@ const routes = [
   {path : '/companyList',exact : true,name : 'Company List',component:CompanyList},
   {path : '/create/company',exact : true,name : 'Create Company',component:CreateCompany},
   {path : '/edit/company',exact : true,name : 'Company List',component:EditCompany},
-  {path : '/category',exact : true,name : 'Category List',component:CategoryList},
-  {path : '/create/category',exact : true,name : 'Create Category',component:CreateCategory},
-  {path : '/edit/category/:id',exact : true,name : 'Edit Category',component:EditCategory},
   {path : '/products',exact : true,name : 'Product List',component:ProductList},
   {path : '/create/products',exact : true,name : 'Create Product',component:CreateProduct},
   {path : '/edit/products/:id',exact : true,name : 'Edit Product',component:EditProduct},
-  {path : '/partyList',exact : true,name : 'Party List',component:PartyList},
-  {path : '/create/party',exact : true,name : 'Create Party',component:CreateParty},
-  {path : '/edit/party/:id',exact : true,name : 'Edit Party',component:EditParty},
-  {path : '/customerList',exact : true,name : 'Customer List',component:CustomerList},
-  {path : '/create/customer',exact : true,name : 'Create Customer',component:CreateCustomer},
   {path : '/create/purchase',exact : true,name : 'Create Purchase Entry',component:CreatePurchaseEntry},
   {path:'/purchaseReport',exact:true,name:'Purchase Report',component:PurchaseReport},
-  {path : '/edit/customer/:id',exact : true,name : 'Edit Customer',component:EditCustomer},
+  
   {path : '/edit/purchase/:id',exact : true, name : 'Edit Purchase',component : EditPurchaseEntry},
   {path : '/inventoryList',exact : true,name : 'Inventory List',component : InventoryList},
   {path : '/create/purchaseReturn',exact : true, name : 'Create Purchase Return',component : PurchaseReturnEntry},
@@ -154,9 +147,6 @@ const routes = [
   
   //Sub category routes
   
-  {path : '/subcategory',exact : true,name : 'Sub Category List',component: SubCategoryList},
-  {path : '/create/subcategory',exact : true,name : 'Create Sub Category',component: CreateSubCategory},
-  {path : '/edit/subcategory/:id',exact : true,name : 'Edit Sub Category',component: EditSubCategory},
   {path : '/edit/purchaseReturn/:id',exact : true, name : 'Edit Purchase Return',component : EditPurchaseReturn},
   {path:'/purchaseReturnReport',exact:true,name:'Purchase Return Report',component:PurchaseReturnReport},
   {path : '/create/sales',exact : true,name : 'Create Sales',component:CreateSalesEntry},
@@ -164,7 +154,20 @@ const routes = [
   {path : '/create/salesReturn',exact : true,name : 'Create Sales Return',component:CreateSalesReturnEntry},
   {path : '/edit/salesReturn/:id',exact : true, name : 'Edit Sales Return',component : EditSalesReturnEntry},
   {path : '/salesReturnReport',exact : true,name : 'Sales Return Report',component : SalesReturnReport},
-  {path : '/recieptList',exact : true,name : 'Reciept List',component : RecieptList}
+  {path : '/recieptList',exact : true,name : 'Reciept List',component : RecieptList},
+  
+  //restaurant routes
+
+  {path : '/restaurantList', exact : true, name : 'Restaurant List',component: RestaurantList},
+  {path : '/create/restaurant', exact : true, name : 'Create Restaurant',component: CreateRestaurant},
+  {path : '/edit/restaurant/:id', exact : true, name : 'Edit Restaurant',component: EditRestaurant},
+  
+  //user Routes
+  {path : '/userList',exact : true,name : 'User List',component: UserList},
+  {path : '/create/user',exact : true,name : 'Create User',component: CreateUser},
+  {path : '/edit/user/:id',exact : true,name : 'Edit User',component:EditUser},
+  
 ];
+
 
 export default routes;
