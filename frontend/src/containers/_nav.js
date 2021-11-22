@@ -33,29 +33,6 @@ const _nav =  [
         _tag: 'CSidebarNavItem',
         name: 'Inventory',
         to: '/inventoryList',
-      },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Reciept',
-        to: '/recieptList',
-      },
-    ],
-  },
-  {
-    _tag: 'CSidebarNavDropdown',
-    name: 'Purchase',
-    route: '/base',
-    icon: 'cil-puzzle',
-    _children: [
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Purchase Entry',
-        to: '/create/purchase',
-      },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Purchase Return',
-        to: '/create/purchaseReturn',
       }
     ],
   },
@@ -69,11 +46,6 @@ const _nav =  [
         _tag: 'CSidebarNavItem',
         name: 'Sales Entry',
         to: '/create/sales',
-      },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Sales Return',
-        to: '/create/salesReturn',
       }
     ],
   },
@@ -99,23 +71,8 @@ const _nav =  [
     _children: [
       {
         _tag: 'CSidebarNavItem',
-        name: 'Purchase Report',
-        to: '/purchaseReport',
-      },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Purchase Return Report',
-        to: '/purchaseReturnReport',
-      },
-      {
-        _tag: 'CSidebarNavItem',
         name: 'Sales Report',
         to: '/salesReport',
-      },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Sales Return Report',
-        to: '/salesReturnReport',
       },
       {
         _tag: 'CSidebarNavItem',

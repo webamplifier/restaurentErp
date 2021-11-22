@@ -48,12 +48,7 @@ const ProductList = React.lazy(()=>import('./screens/Products/index'));
 const CreateProduct = React.lazy(()=>import('./screens/Products/create'));
 const EditProduct = React.lazy(()=>import('./screens/Products/edit'));
 
-const CreatePurchaseEntry = React.lazy(()=>import('./screens/Purchase Entry/Purchase/create'));
-const PurchaseReport = React.lazy(()=>import('./screens/Reports/PurchaseReport'));
-const EditPurchaseEntry = React.lazy(()=>import('./screens/Purchase Entry/Purchase/Edit'));
-
 const InventoryList = React.lazy(()=>import('./screens/Inventory/Index'));
-const PurchaseReturnEntry = React.lazy(()=>import('./screens/Purchase Entry/Purchase Return/create'));
 
 const SalesReport = React.lazy(()=>import('./screens/Reports/SalesReport'));
 const DayWiseSales = React.lazy(()=>import('./screens/Reports/DayWiseSales'));
@@ -61,14 +56,9 @@ const createExpense = React.lazy(()=>import('./screens/Expense/create'));
 const editExpense = React.lazy(()=>import('./screens/Expense/Edit'));
 const expenseReport = React.lazy(()=>import('./screens/Reports/ExpenseReport'));
 //subcategory Imports
-const EditPurchaseReturn = React.lazy(()=>import('./screens/Purchase Entry/Purchase Return/edit'));
-const PurchaseReturnReport = React.lazy(()=>import('./screens/Reports/PurchaseReturnReport'));
 const CreateSalesEntry = React.lazy(()=>import('./screens/Sales/Sales Entry/Create'));
 const EditSalesEntry = React.lazy(()=>import('./screens/Sales/Sales Entry/Edit'));
-const CreateSalesReturnEntry = React.lazy(()=>import('./screens/Sales/Sales Return/Create'));
-const EditSalesReturnEntry = React.lazy(()=>import('./screens/Sales/Sales Return/Edit'));
-const SalesReturnReport = React.lazy(()=>import('./screens/Reports/SalesReturnReport'));
-const RecieptList = React.lazy(()=>import('./screens/Reciept/index'));
+
 
 //restaurant imports
 
@@ -131,13 +121,8 @@ const routes = [
   {path : '/edit/company',exact : true,name : 'Company List',component:EditCompany},
   {path : '/products',exact : true,name : 'Product List',component:ProductList},
   {path : '/create/products',exact : true,name : 'Create Product',component:CreateProduct},
-  {path : '/edit/products/:id',exact : true,name : 'Edit Product',component:EditProduct},
-  {path : '/create/purchase',exact : true,name : 'Create Purchase Entry',component:CreatePurchaseEntry},
-  {path:'/purchaseReport',exact:true,name:'Purchase Report',component:PurchaseReport},
-  
-  {path : '/edit/purchase/:id',exact : true, name : 'Edit Purchase',component : EditPurchaseEntry},
+  {path : '/edit/products/:id',exact : true,name : 'Edit Product',component:EditProduct},  
   {path : '/inventoryList',exact : true,name : 'Inventory List',component : InventoryList},
-  {path : '/create/purchaseReturn',exact : true, name : 'Create Purchase Return',component : PurchaseReturnEntry},
   {path : '/salesReport',exact : true,name : 'Sales Report',component : SalesReport},
   {path : '/DayWiseSales',exact : true,name : 'Day Wise Sales Report',component : DayWiseSales},
   {path : '/DayWiseProfit',exact : true,name : 'Day Wise Profit Report',component : DayWiseProfit},
@@ -147,15 +132,8 @@ const routes = [
   
   //Sub category routes
   
-  {path : '/edit/purchaseReturn/:id',exact : true, name : 'Edit Purchase Return',component : EditPurchaseReturn},
-  {path:'/purchaseReturnReport',exact:true,name:'Purchase Return Report',component:PurchaseReturnReport},
   {path : '/create/sales',exact : true,name : 'Create Sales',component:CreateSalesEntry},
   {path : '/edit/sales/:id',exact : true, name : 'Edit Sales',component : EditSalesEntry},
-  {path : '/create/salesReturn',exact : true,name : 'Create Sales Return',component:CreateSalesReturnEntry},
-  {path : '/edit/salesReturn/:id',exact : true, name : 'Edit Sales Return',component : EditSalesReturnEntry},
-  {path : '/salesReturnReport',exact : true,name : 'Sales Return Report',component : SalesReturnReport},
-  {path : '/recieptList',exact : true,name : 'Reciept List',component : RecieptList},
-  
   //restaurant routes
 
   {path : '/restaurantList', exact : true, name : 'Restaurant List',component: RestaurantList},
