@@ -26,6 +26,7 @@ router.post('/createuser',Middlewares.checkAuth,UserController.create);
 router.get('/userById/:id',Middlewares.checkAuth,UserController.fetchById);
 router.post('/updateuser/:id',Middlewares.checkAuth,UserController.update);
 router.get('/deleteuser/:id',Middlewares.checkAuth,UserController.delete);
+router.post('/editPassword/:id',Middlewares.checkAuth,UserController.updatePassword);
 
 // restaurent routes
 router.post('/createRestaurant',Middlewares.checkAuth,RestaurentController.create);

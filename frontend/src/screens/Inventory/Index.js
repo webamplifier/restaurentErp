@@ -24,7 +24,6 @@ export default function Index() {
         const formData = new FormData();
         formData.append('new_qty',adjutAmount);
         async function editData(){
-            
             const respone = await fetch(url + 'edit/inventory/' + id,{
                 method : 'POST',
                 headers : {
@@ -97,7 +96,7 @@ export default function Index() {
     return (
         <section>
             <ToastContainer />
-            <InventoryAdjustModal showModal={showModal} setShowModal={setShowModal} adjutAmount={adjutAmount} setAdjustAmount={setAdjustAmount} submitAdjust={submitAdjust} />
+            <InventoryAdjustModal showModal={showModal} setShowModal={setShowModal} adjustAmount={adjutAmount} setAdjustAmount={setAdjustAmount} submitAdjust={submitAdjust} />
             <CCol xs="12" lg="12">
                 <CCard>
                     <CCardBody>

@@ -5,7 +5,7 @@ import { url } from 'src/helpers/helpers';
 import { toast, ToastContainer } from 'react-toastify'
 import { userContext } from '../../context/UserContext'
 import CustomModal from 'src/components/CustomModal';
-
+import InventoryAdjustModal from 'src/components/InventoryAdjustModal';
 
 const getBadge = status => {
   switch (status) {
@@ -19,12 +19,46 @@ const getBadge = status => {
 
 export default function Index() {
   const [id, setId] = React.useState(null);
+  const [password, setPassword] = React.useState('');
   const [modal, setModal] = React.useState(false)
   const { user,setLoad } = React.useContext(userContext);
-  //tax
   const fields = ['#', 'restaurant_name','name', 'email', 'role','action'];
-  //
   const [userList, setUserList] = React.useState([]);
+  const [showEditModal, setShowEditModal] = React.useState(false);
+  
+  const showModalFunc = (id) => {
+    setId(id);
+    setShowEditModal(true);
+  }
+
+  const submitAdjust = () => {
+    setLoad(true)
+    const formData = new FormData();
+    formData.append('password',password);
+    async function editData(){
+        const respone = await fetch(url + 'editPassword/' + id,{
+            method : 'POST',
+            headers : {
+                'Authorization' : user.token,
+            },
+            body : formData
+        })
+
+        if (respone.ok === true){
+            const data = await respone.json();
+            setLoad(false)
+            console.log(data);
+            if (data.status === 200){
+                setShowEditModal(false);
+                setPassword('');   
+            }
+            else{
+                toast.error(data.message)
+            }
+        }
+    }
+    editData();
+}
 
   React.useEffect(() => {
     setLoad(true)
@@ -116,6 +150,7 @@ export default function Index() {
     <section>
       <ToastContainer />
       <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
+      <InventoryAdjustModal header="Adjust Password" label="Enter new Password" showModal={showEditModal} setShowModal={setShowEditModal} adjustAmount={password} setAdjustAmount={setPassword} submitAdjust={submitAdjust} />
       <Link to='/create/user'>Create User</Link>
       <CCol xs="12" lg="12">
         <CCard>
@@ -146,6 +181,7 @@ export default function Index() {
                 'action': (item) => (
                   <td>
                     <Link to={`/edit/user/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
+                    <i style={{cursor:'pointer'}} onClick={()=>showModalFunc(item.id)} class="fa fa-user" aria-hidden="true"></i>
                     <i style={{cursor:"pointer"}} onClick={()=>showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i>
                   </td>
                 )

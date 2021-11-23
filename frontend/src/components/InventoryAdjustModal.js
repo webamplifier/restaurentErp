@@ -3,7 +3,7 @@ import React from 'react'
 
 
 export default function InventoryAdjustModal(props) {
-    const { showModal, setShowModal, adjustAmount,setAdjustAmount,submitAdjust } = props;
+    const { header="Adjust Inventory", label="Add/Subtract Quantity",showModal, setShowModal, adjustAmount,setAdjustAmount,submitAdjust } = props;
 
     return (
         <div className='delete_modal_box'>
@@ -12,14 +12,14 @@ export default function InventoryAdjustModal(props) {
                 onClose={setShowModal}
             >
                 <CModalHeader closeButton>
-                    Adjust Inventory
+                    {header}
                 </CModalHeader>
                 <CModalBody className='delete_modal_body'>
                     <div className="row">
 
                         <div className="col-12">
                             <div className="form-group">
-                                <label htmlFor="">Add/Subtract Quantity</label>
+                                <label htmlFor="">{label}</label>
                                 <input type="text" value={adjustAmount} onChange={e => setAdjustAmount(e.target.value)} className='form-control' />
                             </div>
                         </div>

@@ -11,7 +11,6 @@ export default function Edit() {
     const { user,setLoad } = React.useContext(userContext);
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
-    const [password,setPassword] =React.useState('');
     const [role, setRole] = React.useState('');
     const [allRestaurants, setAllRestaurants] = React.useState('');
     const [currentRestaurant, setCurrentRestaurant] = React.useState('');
@@ -20,10 +19,10 @@ export default function Edit() {
         setLoad(true)
         e.preventDefault();
         async function submitData() {
+            if(name && role && email && currentRestaurant){
             const formData = new FormData();
             formData.append('name', name);
             formData.append('email', email);
-            formData.append('password', password);
             formData.append('restaurent_id', currentRestaurant.value);
             formData.append('restaurant_name', currentRestaurant.label);
             formData.append('role', role);
@@ -45,6 +44,9 @@ export default function Edit() {
                     toast.error(data.message)
                 }
             }
+        }else{
+            toast.error("Please fill the fields with *");
+        }
         }
         submitData();
     }
@@ -89,7 +91,6 @@ export default function Edit() {
                 const user_detail = data.user_detail;
                 setName(user_detail.name);
                 setEmail(user_detail.email);
-                setPassword(user_detail.password);
                 setRole(user_detail.role);
                 setCurrentRestaurant({
                     value : user_detail.restaurent_id,
@@ -121,12 +122,6 @@ export default function Edit() {
                         <label for="inputPassword" class="col-sm-2 col-form-label">Email:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
                             <input value={email} onChange={e => setEmail(e.target.value)} type="email" class="form-control" id="inputPassword" />
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="inputPassword" class="col-sm-2 col-form-label">Password:<span className='required-label'>*</span></label>
-                        <div class="d-flex align-items-sm-center col-sm-10">
-                            <input value={password} onChange={e => setPassword(e.target.value)} type="password" class="form-control" id="inputPassword" />
                         </div>
                     </div>
                     <div class="form-group row">

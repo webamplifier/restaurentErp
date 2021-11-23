@@ -80,7 +80,7 @@ router.create = async (req, res) => {
     return res.json({ status, message })
 }
 
-// this below function is used to fetch the category by id
+// this below function is used to fetch the user by id
 router.fetchById = async (req, res) => {
     let status = 500;
     let message = 'Oops something went wrong!';
@@ -98,7 +98,7 @@ router.fetchById = async (req, res) => {
     return res.json({ status, message, user_detail });
 }
 
-// this below function is used to update the category
+// this below function is used to update the user
 router.update = async (req, res) => {
     let status = 500;
     let message = 'Oops something went wrong!';
@@ -107,31 +107,16 @@ router.update = async (req, res) => {
 
     await knex("users").where("id", id).then(async response => {
         if (response[0].email === inputs.email) {
-          let update_obj = {};
-           if (inputs.password) {
-           update_obj = {
-                    name: inputs.name,
-                    email: inputs.email,
-                    password: MD5(inputs.password),
-                    role: inputs.role,
-                    restaurent_id : inputs.restaurent_id,
-                    restaurant_name: inputs.restaurant_name,
-                    created_by: req.user_data.id,
-                    created_by_name: req.user_data.name,
-                    created_at: await HELPERS.dateTime()
-                         }
-                } else {
-                    update_obj = {
-                            name: inputs.name,
-                            email: inputs.email,
-                            role: inputs.role,
-                            restaurent_id : inputs.restaurent_id,
-                            restaurant_name: inputs.restaurant_name,
-                            created_by: req.user_data.id,
-                            created_by_name: req.user_data.name,
-                            created_at: await HELPERS.dateTime()
-                            }
-             }
+                let update_obj = {
+                        name: inputs.name,
+                        email: inputs.email,
+                        role: inputs.role,
+                        restaurent_id : inputs.restaurent_id,
+                        restaurant_name: inputs.restaurant_name,
+                        created_by: req.user_data.id,
+                        created_by_name: req.user_data.name,
+                        created_at: await HELPERS.dateTime()
+                        }
 
     await knex('users').where('id', id).update(update_obj).then(response1 => {
         if (response1) {
@@ -145,21 +130,7 @@ router.update = async (req, res) => {
                 status = 300;
                 message = "Email already exists"
             } else {
-                let update_obj = {};
-           if (inputs.password) {
-           update_obj = {
-                    name: inputs.name,
-                    email: inputs.email,
-                    password: MD5(inputs.password),
-                    role: inputs.role,
-                    restaurent_id : inputs.restaurent_id,
-                    restaurant_name: inputs.restaurant_name,
-                    created_by: req.user_data.id,
-                    created_by_name: req.user_data.name,
-                    created_at: await HELPERS.dateTime()
-                         }
-            } else {
-            update_obj = {
+            let update_obj = {
                     name: inputs.name,
                     email: inputs.email,
                     role: inputs.role,
@@ -169,7 +140,6 @@ router.update = async (req, res) => {
                     created_by_name: req.user_data.name,
                     created_at: await HELPERS.dateTime()
                      }
-         }
          await knex("users").where("id",id).update(update_obj).then(response2 => {
             if (response2) {
                 status = 200;
@@ -183,19 +153,39 @@ router.update = async (req, res) => {
     return res.json({ status, message })
 }
 
-// this below function is used to delete the category
+//this below function is used to update the password
+router.updatePassword = async (req,res) =>{
+    let status = 500;
+    let message= 'Oops something went wrong!';
+    let {id} = req.params;
+    let input = req.body;
+    console.log(input);
+    let update_obj={
+        password: MD5(input.password)
+    }
+    await knex('users').where('id', id).update(update_obj).then(response => {
+        if (response) {
+            status = 200;
+            message = 'Password has been updated successfully!';
+        }
+    }).catch(err => console.log(err))
+    return res.json({ status, message })
+}
+
+
+// this below function is used to delete the user
 router.delete = async (req, res) => {
     let status = 500;
     let message = 'Oops something went wrong!';
     let { id } = req.params;
 
-    await knex('users').where('id',id).del().then(response=>{
+    await knex('users').where('id',id).del().then(response=>{   
         if (response){
             status = 200;
             message = 'User has been deleted successfully!';
         }
     }).catch(err=>console.log(err))
-    
+
     return res.json({ status, message })
 }
 

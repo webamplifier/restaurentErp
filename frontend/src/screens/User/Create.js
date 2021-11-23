@@ -44,7 +44,7 @@ export default function Create() {
         setLoad(true)
         e.preventDefault();
         async function submitData() {
-            if(name && email && password && role)
+            if(name && email && password && role && currentRestaurant)
             {const formData = new FormData();
             formData.append('name', name);
             formData.append('email', email);
