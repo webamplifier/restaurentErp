@@ -27,15 +27,12 @@ router.create = async (req,res) => {
 
     let create_obj = {
         uuid : await HELPERS.getKnexUuid(knex),
-        category_id : inputs.category_id,
-        category_name : inputs.category_name,
-        subcategory_id : inputs.subcategory_id,
-        subcategory_name : inputs.subcategory_name,
-        type : inputs.type,
         price : inputs.price,
         name : inputs.product_name,
-        pack_unit : inputs.pack,
-        sales_unit : inputs.sales,
+        stock_quantity: inputs.stock_quantity,
+        created_by: req.user_data.id,
+        created_by_name: req.user_data.name,
+        created_at: HELPERS.dateTime()
     }
 
     await knex('products').insert(create_obj).then(response=>{
@@ -76,15 +73,12 @@ router.update = async (req,res) => {
     console.log(inputs);
 
     let update_obj = {
-        category_id : inputs.category_id,
-        category_name : inputs.category_name,
-        subcategory_id : inputs.subcategory_id,
-        subcategory_name : inputs.subcategory_name,
-        type : inputs.type,
         price : inputs.price,
         name : inputs.product_name,
-        pack_unit : inputs.pack,
-        sales_unit : inputs.sales,
+        stock_quantity: inputs.stock_quantity,
+        created_by: req.user_data.id,
+        created_by_name: req.user_data.name,
+        created_at: HELPERS.dateTime()
     }
 
     await knex('products').where('id',id).update(update_obj).then(response=>{
@@ -104,7 +98,6 @@ router.delete = async (req,res) => {
     let {id} = req.params;
     let inputs = req.body;
 
-    
     await knex('products').where('id',id).del().then(response=>{
         if (response){
             status = 200;

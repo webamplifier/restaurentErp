@@ -8,10 +8,9 @@ import {useParams} from 'react-router-dom';
 export default function Edit() {
     const {id} = useParams();
     const {user,setLoad} = React.useContext(userContext);
-    
     const [name,setName] = React.useState('');
     const [price,setPrice] = React.useState('0')
-    const [stock_quantity,setStockQuantity] = React.useState('1');
+    const [stock_quantity,setStockQuantity] = React.useState('0');
     React.useEffect(()=>{
         setLoad(true)
         
@@ -30,7 +29,7 @@ export default function Edit() {
                     setLoad(false)
                     let product_detail = data.product_detail;
                     setName(product_detail.name);
-                    setPrice(product_detail?.price);
+                    setPrice(product_detail.price);
                     setStockQuantity(product_detail.stock_quantity);
                 }else{
                     setLoad(false)
@@ -42,14 +41,15 @@ export default function Edit() {
     },[])
 
     const handleSubmit = e => {
-        if(name && price && stock_quantity)
-        {   
-            setLoad(true)
-        const formData = new FormData();
-        formData.append('product_name',name);
-        formData.append('price',price)
-        formData.append('stock_quantity',stock_quantity);
+        setLoad(true);
+        e.preventDefault();
         async function submitData(){
+            if(name && price && stock_quantity)
+            {   
+            const formData = new FormData();
+            formData.append('product_name',name);
+            formData.append('price',price)
+            formData.append('stock_quantity',stock_quantity);
             const response = await fetch(url + 'updateproduct/' + id,{
                 method : 'POST',
                 headers : {
@@ -69,12 +69,11 @@ export default function Edit() {
                     toast.error(data.message)
                 }
             }
+        }else{
+            toast.error('Please fill the data with *');    
         }
-
+        }
         submitData();
-    }else{
-        toast.error('Please fill the data with *');    
-    }
     }
 
     return (
@@ -85,20 +84,20 @@ export default function Edit() {
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Product Name:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
-                            <input value={name} onChange={e=>setName(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                            <input required value={name} onChange={e=>setName(e.target.value)} type="text" class="form-control" id="inputPassword" />
                         </div>
                     </div>
                     
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Price:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
-                            <input value={price} onChange={e=>setPrice(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                            <input required value={price} onChange={e=>setPrice(e.target.value)} type="text" class="form-control" id="inputPassword" />
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Stock Quantity<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
-                            <input value={stock_quantity} onChange={e=>setStockQuantity(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                            <input required value={stock_quantity} onChange={e=>setStockQuantity(e.target.value)} type="text" class="form-control" id="inputPassword" />
                         </div>
                     </div>
                 </div>

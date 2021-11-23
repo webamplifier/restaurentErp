@@ -22,7 +22,7 @@ export default function Index() {
   const [modal, setModal] = React.useState(false)
   const { user,setLoad } = React.useContext(userContext);
   //tax
-  const fields = ['#', 'name', 'email', 'password', 'role','action'];
+  const fields = ['#', 'restaurant_name','name', 'email', 'role','action'];
   //
   const [userList, setUserList] = React.useState([]);
 
@@ -39,14 +39,15 @@ export default function Index() {
       if (response.ok === true) {
         const data = await response.json();
         setLoad(false)
+        console.log(data);
         if (data.status === 200) {
-          setUserList(data.user_list.map((item, index) => {
+          setUserList(data.users_list?.map((item, index) => {
             return {
               '#': index + 1,
+              'restaurant_name': item.restaurant_name,
               'id': item.id,
               'name': item.name,
               'email': item.email,
-              'password': item.password,
               'role':item.role,
             }
           }))
@@ -84,13 +85,13 @@ export default function Index() {
             const data = await response.json();
             setLoad(false)
             if (data.status === 200) {
-              setUserList(data.user_list.map((item, index) => {
+              setUserList(data.users_list?.map((item, index) => {
                 return {
                   '#': index + 1,
                   'id': item.id,
+                  'restaurant_name': item.restaurant_name,
                   'name': item.name,
                   'email': item.email,
-                  'password': item.password,
                   'role': item.role,
                 }
               }))
@@ -140,7 +141,7 @@ export default function Index() {
                   ),
                 'role':
                 (item) =>
-                  (<td>{(item.role === "2") ? "Restaurant_admin" : "Staff"}</td>
+                  (<td>{(item.role === 2) ? "Restaurant_admin" : "Staff"}</td>
                   ),
                 'action': (item) => (
                   <td>

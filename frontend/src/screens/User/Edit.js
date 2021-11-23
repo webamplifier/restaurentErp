@@ -1,5 +1,6 @@
 import React from 'react'
 import { fetchContext } from '../../context/fetchContext'
+import Select from 'react-select'
 import { toast, ToastContainer } from 'react-toastify'
 import { userContext } from '../../context/UserContext'
 import { url } from 'src/helpers/helpers';
@@ -12,6 +13,8 @@ export default function Edit() {
     const [email, setEmail] = React.useState('');
     const [password,setPassword] =React.useState('');
     const [role, setRole] = React.useState('');
+    const [allRestaurants, setAllRestaurants] = React.useState('');
+    const [currentRestaurant, setCurrentRestaurant] = React.useState('');
 
     const handleSubmit = e => {
         setLoad(true)
@@ -21,7 +24,10 @@ export default function Edit() {
             formData.append('name', name);
             formData.append('email', email);
             formData.append('password', password);
+            formData.append('restaurent_id', currentRestaurant.value);
+            formData.append('restaurant_name', currentRestaurant.label);
             formData.append('role', role);
+            
             const response = await fetch(url + 'updateuser/' + id, {
                 method: 'POST',
                 headers: {
@@ -41,12 +47,35 @@ export default function Edit() {
             }
         }
         submitData();
-
-
     }
 
     React.useEffect(() => {
         setLoad(true)
+        async function fetchRestaurants(){
+            const response = await fetch(url + 'restaurantlist',{
+                method : 'GET',
+                headers : {
+                    'Authorization' : user?.token
+                }
+            })
+
+            if (response.ok === true){
+                setLoad(false)
+                const data = await response.json();
+
+                if (data.status === 200){
+                    setLoad(false)
+                    setAllRestaurants(data?.restaurant_list?.map(item=>{
+                        return {
+                            value : item.id,
+                            label : item.name
+                        }
+                    }));
+                }
+            }
+        }
+        fetchRestaurants();
+
         async function fetchData() {
             const response = await fetch(url + 'userById/' + id, {
                 method: 'GET',
@@ -54,7 +83,6 @@ export default function Edit() {
                     'Authorization': user.token
                 }
             })
-
             if (response.ok === true) {
                 const data = await response.json();
                 setLoad(false)
@@ -62,7 +90,11 @@ export default function Edit() {
                 setName(user_detail.name);
                 setEmail(user_detail.email);
                 setPassword(user_detail.password);
-                setRole((user_detail.role==="2") ? "Restaurant_admin" : "Staff");
+                setRole(user_detail.role);
+                setCurrentRestaurant({
+                    value : user_detail.restaurent_id,
+                    label : user_detail.restaurant_name
+                })
             }
         }
         fetchData();
@@ -73,6 +105,12 @@ export default function Edit() {
             <ToastContainer />
             <form onSubmit={e => handleSubmit(e)}>
             <div className='p-sm-5 create-form-field'>
+                <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="exampleFormControlSelect1">Restaurant id:<span className='required-label'>*</span></label>
+                        <div class="d-flex align-items-sm-center col-sm-10">
+                            <Select className="form-control" options={allRestaurants} value={currentRestaurant} onChange={setCurrentRestaurant} />    
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Name:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
@@ -94,7 +132,8 @@ export default function Edit() {
                     <div class="form-group row">
                     <label class="col-sm-2 col-form-label">Role:<span className='required-label'>*</span></label>
                         <select className="form-control d-flex align-items-sm-center col-sm-10" value={role} onChange={e=>setRole(e.target.value)}>
-                            <option value="2" selected>Restaurant_admin</option>
+                            <option value="">Choose</option>
+                            <option value="2">Restaurant_admin</option>
                             <option value="3">Staff</option>
                             </select>
                     </div>

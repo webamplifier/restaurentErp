@@ -9,25 +9,23 @@ export default function Create() {
     
     const [name,setName] = React.useState('');
     const [price,setPrice] = React.useState('0')
-    const [stock_quantity,setStockQuantity] = React.useState('1');
+    const [stock_quantity,setStockQuantity] = React.useState('0');
     // React.useEffect(()=>{
     //     setLoad(true)
         
     // },[])
 
     const handleSubmit = e => {
-        if(name && price && stock_quantity)
-        {setLoad(true)
+        setLoad(true)
         e.preventDefault();
-        const formData = new FormData();
         
-        formData.append('product_name',name);
-        
-        formData.append('price',price)
-        formData.append("stock_quantity",stock_quantity);
-        
-
         async function submitData(){
+            if(name && price && stock_quantity)
+           {  
+            const formData = new FormData();
+            formData.append('product_name',name);
+            formData.append('price',price)
+            formData.append('stock_quantity',stock_quantity);
             const response = await fetch(url + 'createproduct',{
                 method : 'POST',
                 headers : {
@@ -38,21 +36,20 @@ export default function Create() {
 
             if (response.ok === true){
                 const data = await response.json();
+                setLoad(false);
 
                 if (data.status === 200){
-                    setLoad(false)
                     return window.location = window.location.origin + '/#/products'
                 }else{
-                    setLoad(false)
                     toast.error(data.message)
                 }
             }
         }
+        else{
+            toast.error('Please fill the data with *');
+         }
+        } 
         submitData();
-
-      }else{
-           toast.error('Please fill the data with *');
-        }
     }
 
     return (
@@ -63,20 +60,20 @@ export default function Create() {
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Product Name:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
-                            <input value={name} onChange={e=>setName(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                            <input required value={name} onChange={e=>setName(e.target.value)} type="text" class="form-control" id="inputPassword" />
                         </div>
                     </div>
                     
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Price:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
-                            <input value={price} onChange={e=>setPrice(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                            <input required value={price} onChange={e=>setPrice(e.target.value)} type="text" class="form-control" id="inputPassword" />
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Stock Quantity<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
-                            <input value={stock_quantity} onChange={e=>setStockQuantity(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                            <input required value={stock_quantity} onChange={e=>setStockQuantity(e.target.value)} type="text" class="form-control" id="inputPassword" />
                         </div>
                     </div>
                 </div>

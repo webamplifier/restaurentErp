@@ -7,6 +7,7 @@ exports.up = function(knex) {
         table.string("email")
         table.string("password")
         table.bigInteger("restaurent_id")
+        table.string("restaurant_name")
         table.integer("role")
         table.bigInteger("created_by")
         table.string("created_by_name")

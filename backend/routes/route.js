@@ -1,6 +1,6 @@
 const express = require('express');
 const companyController = require("../controllers/CompanyController");
-const UserController = require("../controllers/userController");
+const UserController = require("../controllers/UserController");
 const CategoryController = require('../controllers/CategoryController');
 const SubCategoryController = require('../controllers/SubCategoryController')
 const ProductController = require('../controllers/ProductController');
@@ -21,11 +21,17 @@ const router = express.Router();
 
 // user related routes
 router.post('/login',UserController.login);
-
-
+router.get('/userlist',Middlewares.checkAuth,UserController.list);
+router.post('/createuser',Middlewares.checkAuth,UserController.create);
+router.get('/userById/:id',Middlewares.checkAuth,UserController.fetchById);
+router.post('/updateuser/:id',Middlewares.checkAuth,UserController.update);
+router.get('/deleteuser/:id',Middlewares.checkAuth,UserController.delete);
 
 // restaurent routes
-router.post('/createRestaurant',Middlewares.checkAuth,RestaurentController.create)
+router.post('/createRestaurant',Middlewares.checkAuth,RestaurentController.create);
+router.get('/restaurantlist',Middlewares.checkAuth,RestaurentController.list);
+router.get('/restaurantById/:id',Middlewares.checkAuth,RestaurentController.fetchById);
+router.post('/updaterestaurant/:id',Middlewares.checkAuth,RestaurentController.update);
 
 // category routes
 router.get('/categorylist',Middlewares.checkAuth,CategoryController.list);

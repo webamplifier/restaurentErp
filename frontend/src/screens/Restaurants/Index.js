@@ -20,7 +20,7 @@ const getBadge = status => {
 export default function Index() {
   const { user,setLoad } = React.useContext(userContext);
   //tax
-  const fields = ['#', 'name', 'email', 'password', 'mobile', 'food_license_number', 'GST','action'];
+  const fields = ['#', 'name', 'email', 'mobile', 'food_license_number', 'GST','expiry_date','reminder_date','action'];
   //
   const [restaurantList, setRestaurantList] = React.useState([]);
   const [id, setId] = React.useState(null);
@@ -41,7 +41,7 @@ export default function Index() {
 
         if (data.status === 200) {
           setLoad(false)
-          setRestaurantList(data.party_list.map((item, index) => {
+          setRestaurantList(data.restaurant_list.map((item, index) => {
             return {
               '#': index + 1,
               'id': item.id,
@@ -49,7 +49,9 @@ export default function Index() {
               'email': item.email,
               'mobile': item.mobile,
               'food_license_number': item.food_license_number,
-              'GST': item.GST,
+              'GST': item.gst_number,
+              'expiry_date': item.expiry_date,
+              'reminder_date': item.reminder_date
             }
           }))
         }
@@ -95,7 +97,9 @@ export default function Index() {
                   'email': item.email,
                   'mobile': item.mobile,
                   'food_license_number': item.food_license_number,
-                  'GST': item.GST,
+                  'GST': item.gst_number,
+                  'expiry_date': item.expiry_date,
+                  'reminder_date': item.reminder_date
                 }
               }))
             }
