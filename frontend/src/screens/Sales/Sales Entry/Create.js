@@ -1,36 +1,32 @@
 import React from 'react'
 import plus from '../../../assets/images_manual/add.svg'
 import Select from 'react-select';
-import { url } from 'src/helpers/helpers';
+import { url, currentDate } from 'src/helpers/helpers';
 import { userContext } from '../../../context/UserContext'
 import { toast, ToastContainer } from 'react-toastify';
 import {useHistory} from 'react-router-dom'
 
 export default function Create() {
     const history = useHistory();
+    const n= new Date().toLocaleDateString();
+    let d = currentDate(n);
     const { user,setLoad } = React.useContext(userContext);
     const [invoiceNo, setInvoiceNo] = React.useState('');
-    const [saleDate, setSaleDate] = React.useState('');
-    const [remainPaymentDate, setRemainPaymentDate] = React.useState('');
-    const [currentCustomer, setCurrentCustomer] = React.useState('');
-    const [discountType, setDiscountType] = React.useState('None');
+    const [saleDate, setSaleDate] = React.useState(d);
+    const [tax, setTax] = React.useState('');
+    const [customer, setCustomer] = React.useState('');
+    const [discountType, setDiscountType] = React.useState('Bill');
     const [currentProduct, setCurrentProduct] = React.useState('');
-    const [purchase_price, setPurchasePrice] = React.useState(0);
     const [qty, setQty] = React.useState(1);
     const [mrp, setMrp] = React.useState(0);
-    const [currentDiscountCriteria, setCurrentDiscountCriteria] = React.useState('percent');
-    const [discountValue, setDiscountValue] = React.useState(0);
     const [itemDescription, setItemDescription] = React.useState('');
     const [remarks, setRemarks] = React.useState('');
 
-
     const [allProducts, setAllProducts] = React.useState([]);
-    const [allCustomers, setAllCustomers] = React.useState([]);
     const [allItems, setAllItems] = React.useState([]);
 
     //final related variables and states
     let finalAmount = 0;
-    let remainAmount = 0;
     let discount_amount_final = 0;
     let amount_before_discount_final = 0;
     let amount_after_discount_final = 0;
@@ -38,10 +34,8 @@ export default function Create() {
 
     const [finalDiscountCriteria, setFinalDiscountCriteria] = React.useState('percent');
     const [finalDiscountValue, setFinalDiscountValue] = React.useState(0);
-    const [paidAmount, setPaidAmount] = React.useState(0);
     const [paymentMethod, setPaymentMethod] = React.useState('cash');
     const [totalValue, setTotalValue] = React.useState(0);
-    const [discountAmount,setDiscountAmount] = React.useState(0);
 
     //edit related states
     const [currentEditItem, setCurrentEditItem] = React.useState('');
@@ -49,38 +43,9 @@ export default function Create() {
     //item based variables
     let perItemAmount = 0;
     let amount_item = 0;
-    let amount_before_discount = 0;
-    let amount_after_discount = 0;
-    let discount_amount = 0;
 
     React.useEffect(() => {
         setLoad(true)
-        async function fetchData() {
-            const response = await fetch(url + 'customerlist', {
-                method: 'GET',
-                headers: {
-                    'Authorization': user?.token
-                }
-            })
-
-            if (response.ok === true) {
-                const data = await response.json();
-                setLoad(false)
-                if (data.status === 200) {
-                    setAllCustomers(data?.customer_list.map(item => {
-                        return {
-                            value: item.id,
-                            label: item.name
-                        }
-                    }))
-                } else {
-                    toast.error(data.message)
-                }
-            }
-        }
-
-        fetchData();
-
 
         // products grab
         async function fetchProd() {
@@ -114,32 +79,16 @@ export default function Create() {
 
 
     const calculateTotal = () => {
-        if (purchase_price > 0 && qty > 0) {
-            amount_item = parseFloat(purchase_price) * parseFloat(qty); //amount before tax
+        if (mrp > 0 && qty > 0) {
+            amount_item = parseFloat(mrp) * parseFloat(qty); //amount before tax
             perItemAmount = amount_item
-
-            if (discountType === 'Item' || discountType === 'Both') {
-                amount_before_discount = amount_item;
-                if (currentDiscountCriteria === 'percent') {
-                    discount_amount = (parseFloat(amount_before_discount) / 100) * parseFloat(discountValue)
-                    amount_after_discount = amount_before_discount - discount_amount;
-                    perItemAmount = amount_after_discount;
-                }
-
-                if (currentDiscountCriteria === 'amount') {
-                    discount_amount = parseFloat(discountValue);
-                    amount_after_discount = amount_before_discount - discount_amount;
-                    perItemAmount = amount_after_discount;
-                }
-            }
         }
     }
-
     calculateTotal()
 
     const calculateFinalPrice = () => {
         if (totalValue > 0) {
-            if (discountType === 'Bill' || discountType === 'Both') {
+            if (discountType === 'Bill') {
                 if (finalDiscountCriteria === 'percent') {
                     discount_amount_final = totalValue / 100 * parseFloat(finalDiscountValue);
                     amount_before_discount_final = totalValue;
@@ -152,10 +101,8 @@ export default function Create() {
                     amount_after_discount_final = totalValue - discount_amount_final;
                 }
                 finalAmount = amount_after_discount_final;
-                remainAmount = finalAmount - parseFloat(paidAmount);
             } else {
                 finalAmount = totalValue
-                remainAmount = finalAmount - parseFloat(paidAmount);
             }
         }
     }
@@ -163,53 +110,39 @@ export default function Create() {
     calculateFinalPrice()
 
     const handleSubmitItem = () => {
-        if (invoiceNo && saleDate && currentCustomer && discountType && currentProduct && purchase_price && qty) {
+        if (invoiceNo && saleDate && currentProduct && qty) {
             let new_item_dict = {
                 item: currentProduct,
                 description: itemDescription,
-                purchase_price: purchase_price,
                 qty: qty,
+                tax: tax,
                 mrp: mrp,
-                discount_type: currentDiscountCriteria,
-                discountValue,
                 total: perItemAmount,
                 amount_item,
-                amount_before_discount,
-                discount_amount,
-                amount_after_discount
             };
-
-            
 
             if (currentEditItem) {
                 setCurrentEditItem('')
                 let new_list_edit = []
                 allItems.map((item, index) => {
-                    if (index === parseInt(currentEditItem)-1) {
-                        
+                    if (index === parseInt(currentEditItem)-1) {                        
                         new_list_edit.push(new_item_dict)
                     } else {
                         new_list_edit.push(item)
                     }
                 })
                 let total = 0;
-                let discount_amount = 0;
                 new_list_edit.map(item=>{
                     total = parseFloat(total) + parseFloat(item.total);
-                    discount_amount = parseFloat(discount_amount) + parseFloat(item.discount_amount)
                 })
                 setTotalValue(total);
-                setDiscountAmount(discount_amount);
                 setAllItems(new_list_edit);
             } else {
                 let new_item_list = [...allItems, new_item_dict];
                 let total = 0;
-                let discount_amount = 0;
                 new_item_list.map(item=>{
                     total = parseFloat(total) + parseFloat(item.total);
-                    discount_amount = parseFloat(discount_amount) + parseFloat(item.discount_amount)
                 })
-                setDiscountAmount(discount_amount);
                 setTotalValue(total);
 
                 setTotalValue(parseFloat(totalValue) + parseFloat(perItemAmount))
@@ -217,18 +150,12 @@ export default function Create() {
             }
 
             setCurrentProduct('');
-            setPurchasePrice(0);
             setQty(1);
+            setTax("");
             setMrp(0);
-            setCurrentDiscountCriteria('');
-            setDiscountValue(0);
             setItemDescription('');
             perItemAmount = 0;
-
             amount_item= 0;
-            amount_before_discount = 0;
-            amount_after_discount = 0;
-            discount_amount = 0;
 
         } else {
             toast.error('Fill all fields having *')
@@ -236,25 +163,20 @@ export default function Create() {
     }
 
     const finalSubmit = () => {
-        if (invoiceNo && saleDate && currentCustomer && allItems.length > 0 && totalValue){
+        if (invoiceNo && saleDate && allItems.length > 0 && totalValue){
             setLoad(true)
             let header = {
                 invoiceNo : invoiceNo,
                 saleDate : saleDate,
-                currentCustomer : currentCustomer,
-                discountType : discountType
+                customer : customer,
             }
             let final = {
                 totalValue : totalValue,
                 finalAmount : finalAmount,
-                paidAmount : paidAmount,
-                remainAmount : remainAmount,
-                remainPaymentDate: remainPaymentDate,
                 finalDiscountValue : finalDiscountValue,
                 finalDiscountCriteria : finalDiscountCriteria,
                 remarks : remarks,
                 paymentMethod : paymentMethod,
-                discountAmount : discountAmount
             }
 
             let final_array = [];
@@ -284,7 +206,6 @@ export default function Create() {
                     }
                 }
             }
-
             submitSales()
         }else{
             toast.error('Please fill the data with *');
@@ -295,11 +216,9 @@ export default function Create() {
         setCurrentEditItem(index_value);
         setCurrentProduct(item.item);
         setItemDescription(item.description)
-        setPurchasePrice(item.purchase_price);
         setQty(item.qty);
+        setTax(item.tax);
         setMrp(mrp);
-        setCurrentDiscountCriteria(item.discount_type);
-        setDiscountValue(item.discountValue);
         perItemAmount = item.total;
     }
 
@@ -329,42 +248,11 @@ export default function Create() {
                         </div>
                         <div class="form-group col-md-4">
                             <label for="date">Sale Date<span className='required-label'>*</span></label>
-                            <input value={saleDate} onChange={e => setSaleDate(e.target.value)} type="date" class="form-control" id="date" required />
+                            <input value={saleDate} readOnly type="date" class="form-control" id="date" required />
                         </div>
-                        <div class="form-group col-md-5">
-                                <label for="input-customer">Customer<span className='required-label'>*</span></label>
-                                <Select options={allCustomers} value={currentCustomer} onChange={setCurrentCustomer} />
-                        </div>
-                        <div class="form-group my-md-3 col-md-4">
-                            <div className="text-center mb-2 font-weight-bold">
-                                <label for="input-customer">Discount Type<span className='required-label'>*</span></label>
-                            </div>
-                            <div className='row px-3'>
-                                <div class="form-check col-sm-3">
-                                    <input checked={discountType === 'None' && true} onClick={() => setDiscountType('None')} class="form-check-input" name="discount" type="radio" value="" id="defaultCheck1" />
-                                    <label class="form-check-label" for="defaultCheck1">
-                                        None
-                                    </label>
-                                </div>
-                                <div class="form-check col-sm-3">
-                                    <input onClick={() => setDiscountType('Item')} class="form-check-input" name="discount" type="radio" value="" id="defaultCheck2" />
-                                    <label class="form-check-label" for="defaultCheck2">
-                                        Item
-                                </label>
-                                </div>
-                                <div class="form-check col-sm-3">
-                                    <input onClick={() => setDiscountType('Bill')} class="form-check-input" name="discount" type="radio" value="" id="defaultCheck3" />
-                                    <label class="form-check-label" for="defaultCheck3">
-                                        Bill
-                                </label>
-                                </div>
-                                <div class="form-check col-sm-3">
-                                    <input onClick={() => setDiscountType('Both')} class="form-check-input" name="discount" type="radio" value="" id="defaultCheck3" />
-                                    <label class="form-check-label" for="defaultCheck3">
-                                        Both
-                                </label>
-                                </div>
-                            </div>
+                        <div class="form-group col-md-3">
+                            <label for="customer">Customer</label>
+                            <input value={customer} onChange={e => setCustomer(e.target.value)} type="text" class="form-control" id="customer" />
                         </div>
                     </div>
 
@@ -378,51 +266,22 @@ export default function Create() {
                             <textarea value={itemDescription} onChange={e => setItemDescription(e.target.value)} class="form-control"></textarea>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="invoice-number">Purchase_Price<span className='required-label'>*</span></label>
-                            <input value={purchase_price} onChange={(e) => setPurchasePrice(e.target.value)} type="text" class="form-control" id="" />
+                            <label for="quantity">Quantity<span className='required-label'>*</span></label>
+                            <input required value={qty} onChange={e => setQty(e.target.value)} type="text" class="form-control" id="quantity" />
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="invoice-number">Quantity<span className='required-label'>*</span></label>
-                            <input value={qty} onChange={e => setQty(e.target.value)} type="text" class="form-control" id="" />
+                            <label for="mrp">MRP:</label>
+                            <input required value={mrp} onChange={e => setMrp(e.target.value)} type="text" class="form-control" id="mrp" />
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="invoice-number">MRP:</label>
-                            <input value={mrp} onChange={e => setMrp(e.target.value)} type="text" class="form-control" id="" />
+                            <label for="tax">Tax:</label>
+                            <select id="tax" value={tax} onChange={e => setTax(e.target.value)} class="form-control" required>
+                                <option value="">Select Tax</option>
+                                <option value='1%'>1%</option>
+                                <option value='2%'>2%</option>
+                                <option value='5%'>5%</option>
+                            </select>
                         </div>
-                        {discountType === 'Item' &&
-                            <div className='form-group col-md-4'>
-                                <label htmlFor="">Discount</label>
-                                <div className='m-0 p-0 col-12 row'>
-                                    <div className="px-0 col-5">
-                                        <input value={discountValue} onChange={e => setDiscountValue(e.target.value)} class="form-control" type="text" name="" id="" />
-                                    </div>
-                                    <div className="p-0 col-7">
-                                        <select value={currentDiscountCriteria} onChange={e => setCurrentDiscountCriteria(e.target.value)} class="form-control" required>
-                                            <option value="">Select Type</option>
-                                            <option value='percent'>Percent</option>
-                                            <option value='amount'>Amount</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        {discountType === 'Both' &&
-                            <div className='form-group col-md-4'>
-                                <label htmlFor="">Discount</label>
-                                <div className='m-0 p-0 col-12 row'>
-                                    <div className="px-0 col-5">
-                                        <input value={discountValue} onChange={e => setDiscountValue(e.target.value)} class="form-control" type="text" name="" id="" />
-                                    </div>
-                                    <div className="p-0 col-7">
-                                        <select value={currentDiscountCriteria} onChange={e => setCurrentDiscountCriteria(e.target.value)} class="form-control" required>
-                                            <option value="">Select Type</option>
-                                            <option value='percent'>Percent</option>
-                                            <option value='amount'>Amount</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        }
                         <div class="form-group col-md-4 row">
                             <div class="form-group col-9">
                                 <label for="invoice-number">Total<span className='required-label'>*</span></label>
@@ -443,11 +302,9 @@ export default function Create() {
                                 <tr>
                                     <th scope="col">Items</th>
                                     <th scope="col">Description</th>
-                                    <th scope="col">Purchase_Price</th>
-                                    <th scope="col">Quantity</th>
                                     <th scope="col">Mrp</th>
-                                    <th>Discount</th>
-
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Tax</th>
                                     <th scope="col">Total</th>
                                     <th>Actions</th>
                                 </tr>
@@ -460,10 +317,9 @@ export default function Create() {
                                                 {item.item.label}
                                             </td>
                                             <td>{item.description}</td>
-                                            <td>{item.purchase_price}</td>
-                                            <td>{item.qty}</td>
                                             <td>{item.mrp}</td>
-                                            <td>{item.discountValue} {item.discount_type}</td>
+                                            <td>{item.qty}</td>
+                                            <td>{item.tax}</td>
                                             <td>{item.total}</td>
                                             <td>
                                                 <i style={{ cursor: 'pointer' }} onClick={() => handleEdit(item, index+1)} class="fa fa-pencil" aria-hidden="true"></i>
@@ -472,15 +328,14 @@ export default function Create() {
                                         </tr>
                                     )
                                 })}
-
                             </tbody>
                         </table>
                     </div>}
-                    <div>
+                    {/* <div>
                         <div>
-                            discount amount:- {discountAmount && discountAmount}
-                        </div>
-                    </div>
+                            Taxable amount:- {discountAmount && discountAmount}
+                        </div> 
+                    </div> */}
                     <div className='row mt-5 justify-content-between purchase-create-footer'>
                         <div class="form-group col-md-5">
                             <label for="exampleFormControlTextarea1">Remarks</label>
@@ -509,21 +364,6 @@ export default function Create() {
                                 </div>
                             </div>}
 
-                            {discountType === 'Both' && <div class="form-group row">
-                                <label for="" class="col-md-4 col-form-label">Discount</label>
-                                <div class="pr-0 col-md-8 row">
-                                    <div className="pr-0 col-5">
-                                        <input class="form-control" type="text" value={finalDiscountValue} onChange={e => setFinalDiscountValue(e.target.value)} />
-                                    </div>
-                                    <div className="px-0 col-7">
-                                        <select value={finalDiscountCriteria} onChange={e => setFinalDiscountCriteria(e.target.value)} class="form-control" required>
-                                            <option value="">Select Type</option>
-                                            <option value='percent'>Percent</option>
-                                            <option value='amount'>Amount</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>}
                             <div class="form-group row">
                                 <label for="" class="col-md-4 col-form-label">Final Amount</label>
                                 <div class="col-md-8">
@@ -531,38 +371,17 @@ export default function Create() {
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="" class="col-md-4 col-form-label">Paid Amount</label>
-                                <div class="col-md-8">
-                                    <input value={paidAmount} onChange={e => setPaidAmount(e.target.value)} type="text" class="form-control" id="" />
-                                </div>
-                            </div>
-                            {paidAmount > 0 && <div class="form-group row">
                                 <label for="" class="col-md-4 col-form-label">Payment Method</label>
                                 <div class="col-md-8">
                                     <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} id="input-customer" class="form-control" required>
                                         <option value="">Select payment mode</option>
                                         <option value="cash">Cash</option>
                                         <option value="bank">Bank</option>
-                                        <option value="link">Link</option>
                                     </select>
                                 </div>
-                            </div>}
-                            <div class="form-group row">
-                                <label for="" class="col-md-4 col-form-label">Remain Amount</label>
-                                <div class="col-md-8">
-                                    <input type="text" value={remainAmount} readOnly class="form-control" id="" />
-                                </div>
                             </div>
-                            { remainAmount > 0 && <div class="form-group row">
-                                <label for="date" class="col-md-4 col-form-label">Remain Payment Date<span className='required-label'>*</span></label>
-                                <div class="col-md-8">
-                                    <input type="date" value={remainPaymentDate} onChange= {e=> setRemainPaymentDate(e.target.value)} class="form-control" id="date" required/>
-                                </div>
-                            </div>
-                            }
                         </div>
                     </div>
-
                 </div>
                 <div class="d-flex justify-content-center create-catagory-btns">
                     <button type="button" onClick={() => window.location.reload()} class="font-weight-bold m-3 py-2 px-4 btn btn-danger">Cancel<i

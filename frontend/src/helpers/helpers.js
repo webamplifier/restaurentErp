@@ -12,3 +12,9 @@ export function formatDateTime(date_sting) {
     const date_array_1 = date_array[0].split('-');
     return `${date_array_1[2]}-${date_array_1[1]}-${date_array_1[0]}`
 }
+
+export function currentDate(date_string) {
+    const date_array = date_string.split('/');
+    console.log(date_array);
+    return `${date_array[2]}-${date_array[1]}-${date_array[0]}`
+}
