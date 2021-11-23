@@ -12,11 +12,20 @@ const CustomerController = require("../controllers/CustomerController");
 const PurchaseController = require("../controllers/PurchaseController")
 const InventoryController = require("../controllers/InventoryController");
 const RecieptController= require("../controllers/RecieptController");
+
+const RestaurentController = require("../controllers/RestaurentController")
+
+
 const router = express.Router();
 
 
 // user related routes
 router.post('/login',UserController.login);
+
+
+
+// restaurent routes
+router.post('/createRestaurant',Middlewares.checkAuth,RestaurentController.create)
 
 // category routes
 router.get('/categorylist',Middlewares.checkAuth,CategoryController.list);

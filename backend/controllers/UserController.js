@@ -52,15 +52,17 @@ router.create = async (req, res) => {
 
     let create_obj = {
         uuid: await HELPERS.getKnexUuid(knex),
-        username: inputs.name,
+        name: inputs.name,
         email: inputs.email,
         password: MD5(inputs.password),
+        // restaurent_id : inputs.restaurent_id,
         role_id: inputs.role_id,
         created_by: req.user_data.id,
+        created_by_name: req.user_data.name,
         created_at: await HELPERS.dateTime()
     }
 
-    await knex('users').where('email', inputs.email).where('status', 1).then(async response => {
+    await knex('users').where('email', inputs.email).then(async response => {
         if (response.length > 0) {
             status = 400;
             message = 'User with this email already exist'

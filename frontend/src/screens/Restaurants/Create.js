@@ -4,7 +4,7 @@ import { userContext } from '../../context/UserContext'
 import { url } from 'src/helpers/helpers';
 
 export default function Create() {
-    const { user,setLoad } = React.useContext(userContext);
+    const { user, setLoad } = React.useContext(userContext);
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -16,42 +16,42 @@ export default function Create() {
     const handleSubmit = e => {
         setLoad(true)
         e.preventDefault();
-         
+
         async function submitData() {
-            if(name, email, password, mobile, food_license_number, gst_number, address)
-            {const formData = new FormData();
-            formData.append('name', name);
-            formData.append('email', email);
-            formData.append('password', password);
-            formData.append('mobile', mobile);
-            formData.append('food_license_number', food_license_number);
-            formData.append('GST', gst_number);
-            formData.append('address', address);
+            if (name, email, password, mobile) {
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('email', email);
+                formData.append('password', password);
+                formData.append('mobile', mobile);
+                formData.append('food_license_number', food_license_number);
+                formData.append('GST', gst_number);
+                formData.append('address', address);
 
-            const response = await fetch(url + 'createRestaurant', {
-                method: 'POST',
-                headers: {
-                    'Authorization': user?.token
-                },
-                body: formData
-            })
+                const response = await fetch(url + 'createRestaurant', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': user?.token
+                    },
+                    body: formData
+                })
 
-            if (response.ok === true) {
-                const data = await response.json();
-                setLoad(false)
+                if (response.ok === true) {
+                    const data = await response.json();
+                    setLoad(false)
 
-                if (data.status === 200) {
-                    return window.location = window.location.origin + '/#/restaurantList'
-                } else {
-                    toast.error(data.message)
+                    if (data.status === 200) {
+                        return window.location = window.location.origin + '/#/restaurantList'
+                    } else {
+                        toast.error(data.message)
+                    }
                 }
             }
-    }
 
-    else{
-        toast.error("Please fill the fields with *");
-    }
-    }
+            else {
+                toast.error("Please fill the fields with *");
+            }
+        }
         submitData();
     }
 
@@ -96,7 +96,7 @@ export default function Create() {
                             <input value={gst_number} onChange={e => setGSTNumber(e.target.value)} type="text" class="form-control" id="inputPassword" />
                         </div>
                     </div>
-                    
+
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" for="exampleFormControlTextarea1">Address:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
