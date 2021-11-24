@@ -10,13 +10,18 @@ router.list = async (req,res) => {
     let message = 'Oops something went wrong!';
     let restaurant_list = [];
 
-    await knex("restaurents").then(response=>{
-        if (response){
-            status = 200;
-            message = 'Restaurant list has been fetched successfully!';
-            restaurant_list = response;
-        }
-    }).catch(err=>console.log(err))
+    if (req.user_data.role == 1){
+        await knex("restaurents").then(response=>{
+            if (response){
+                status = 200;
+                message = 'Restaurant list has been fetched successfully!';
+                restaurant_list = response;
+            }
+        }).catch(err=>console.log(err))
+    }else{
+        status = 300;
+        message = "You are not authorized to perform this action"
+    }
 
     return res.json({status,message,restaurant_list})
 }

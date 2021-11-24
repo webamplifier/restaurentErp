@@ -54,7 +54,7 @@ router.fetchById = async (req,res) => {
     let {id} = req.params;
     let product_detail = {};
 
-    await knex('products').where('id',id).then(response=>{
+    await knex('products').where('id',id).where("restaurent_id",req.user_data.restaurent_id).then(response=>{
         if (response.length > 0){
             status = 200;
             message = 'Product has been fetched successfully!';
@@ -78,12 +78,9 @@ router.update = async (req,res) => {
         price : inputs.price,
         name : inputs.product_name,
         stock_quantity: inputs.stock_quantity,
-        created_by: req.user_data.id,
-        created_by_name: req.user_data.name,
-        created_at: HELPERS.dateTime()
     }
 
-    await knex('products').where('id',id).update(update_obj).then(response=>{
+    await knex('products').where('id',id).where("restaurent_id",req.user_data.restaurent_id).update(update_obj).then(response=>{
         if (response){
             status = 200;
             message = 'Product has been updated successfully!';
@@ -100,7 +97,7 @@ router.delete = async (req,res) => {
     let {id} = req.params;
     let inputs = req.body;
 
-    await knex('products').where('id',id).del().then(response=>{
+    await knex('products').where('id',id).where("restaurent_id",req.user_data.restaurent_id).del().then(response=>{
         if (response){
             status = 200;
             message = 'Product has been deleted successfully!';

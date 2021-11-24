@@ -8,12 +8,11 @@ import {useHistory} from 'react-router-dom'
 
 export default function Create() {
     const history = useHistory();
-    const n= new Date().toLocaleDateString();
-    let d = currentDate(n);
+    
     const { user,setLoad } = React.useContext(userContext);
     const [invoiceNo, setInvoiceNo] = React.useState('');
-    const [saleDate, setSaleDate] = React.useState(d);
-    const [tax, setTax] = React.useState('');
+    const [saleDate, setSaleDate] = React.useState(currentDate(new Date().toLocaleDateString()));
+    const [tax, setTax] = React.useState(0);
     const [customer, setCustomer] = React.useState('');
     const [discountType, setDiscountType] = React.useState('Bill');
     const [currentProduct, setCurrentProduct] = React.useState('');
