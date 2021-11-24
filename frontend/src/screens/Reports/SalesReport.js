@@ -19,7 +19,7 @@ const getBadge = status => {
 
 export default function SalesReport() {
     const { user,setLoad } = React.useContext(userContext);
-    const fields = ['#', 'invoice_number', 'customer_name', 'sale_date', 'bill_amount', 'paid_amount', 'remain_amount', 'status', 'action'];
+    const fields = ['#', 'invoice_number', 'customer_name', 'sale_date', 'total_amount', 'payment_Method','action'];
     const [salesList, setSalesList] = React.useState([]);
     const [modal, setModal] = React.useState(false);
     const [paymodal,setPayModal] = React.useState(false);
@@ -48,7 +48,7 @@ export default function SalesReport() {
                     setPayModal(false);
                     setId('');
                     async function fetchData() {
-                        const response = await fetch(url + 'sales/report', {
+                        const response = await fetch(url + 'salesList', {
                             method: 'GET',
                             headers: {
                                 'Authorization': user?.token
@@ -59,7 +59,7 @@ export default function SalesReport() {
                             const data = await response.json();
                             setLoad(false)
                             if (data.status === 200) {
-                                setSalesList(data.sales_data);
+                                setSalesList(data.sale_list);
                             } else {
                                 toast.error(data.message);
                             }
@@ -97,7 +97,7 @@ export default function SalesReport() {
                 setModal(false);
                 setId('');
                 async function fetchData() {
-                    const response = await fetch(url + 'sales/report', {
+                    const response = await fetch(url + 'salesList', {
                         method: 'GET',
                         headers: {
                             'Authorization': user?.token
@@ -108,7 +108,7 @@ export default function SalesReport() {
                         const data = await response.json();
                         setLoad(false)
                         if (data.status === 200) {
-                            setSalesList(data.sales_data);
+                            setSalesList(data.sale_list);
                         } else {
                             toast.error(data.message);
                         }
@@ -131,7 +131,7 @@ export default function SalesReport() {
     React.useEffect(() => {
         setLoad(true)
         async function fetchData() {
-            const response = await fetch(url + 'get-sales-list', {
+            const response = await fetch(url + 'salesList', {
                 method: 'GET',
                 headers: {
                     'Authorization': user?.token
@@ -142,7 +142,7 @@ export default function SalesReport() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
-                    setSalesList(data.list);
+                    setSalesList(data.sale_list);
                 } else {
                     toast.error(data.message);
                 }
@@ -176,24 +176,29 @@ export default function SalesReport() {
                                         {index + 1}
                                     </td>
                                 ),
-                                'sale_date' : (item,index) => (
+                                'invoice_number':(item) =>(
+                                     <td>
+                                        {item.invoice_number}
+                                    </td>
+                                ),
+                                'customer_name':(item) =>(
+                                    <td>
+                                     {item.customer_name}    
+                                    </td>
+                                ),
+                                'sale_date' : (item) => (
                                     <td>
                                         {item.sale_date.split(' ')[0]}
                                     </td>
                                 ),
-                                'Payment Method' : (item) => (
-                                    <td>
-                                        {item.payment_type}
-                                    </td>
-                                ),
-                                'bill_amount' : (item) => (
+                                'total_amount' : (item) => (
                                     <td>
                                         {item.total_after_roundoff}
                                     </td>
                                 ),
-                                'paid_amount': (item) => (
+                                'payment_Method' : (item) => (
                                     <td>
-                                        {item.amount_paid}
+                                        {item.payment_type}
                                     </td>
                                 ),
                                 'status':

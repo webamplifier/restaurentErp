@@ -15,6 +15,5 @@ export function formatDateTime(date_sting) {
 
 export function currentDate(date_string) {
     const date_array = date_string.split('/');
-    console.log(date_array);
     return `${date_array[2]}-${date_array[1]}-${date_array[0]}`
 }

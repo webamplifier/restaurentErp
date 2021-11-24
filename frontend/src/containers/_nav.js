@@ -29,11 +29,6 @@ const _nav =  [
         name: 'Products',
         to: '/products',
       },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Inventory',
-        to: '/inventoryList',
-      }
     ],
   },
   {

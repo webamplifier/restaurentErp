@@ -1,7 +1,7 @@
 import React from 'react'
 import plus from '../../../assets/images_manual/add.svg'
 import Select from 'react-select';
-import { url,currentDate } from 'src/helpers/helpers';
+import { url,currentDate, formatDateTime} from 'src/helpers/helpers';
 import { userContext } from '../../../context/UserContext'
 import { toast, ToastContainer } from 'react-toastify';
 import { useHistory, useParams } from 'react-router-dom'
@@ -15,6 +15,7 @@ export default function Edit() {
     const [saleDate, setSaleDate] = React.useState(currentDate(new Date().toLocaleDateString()));
     const [tax, setTax] = React.useState(0);
     const [customer, setCustomer] = React.useState('');
+    const [mobile_number, setMobileNumber] = React.useState('');
     const [discountType, setDiscountType] = React.useState('Bill');
     const [currentProduct, setCurrentProduct] = React.useState('');
     const [qty, setQty] = React.useState(1);
@@ -69,7 +70,7 @@ export default function Edit() {
                         return {
                             value : item.id,
                             label : item.name,
-                            type : item.type
+                            mrp : item.price
                         }
                     }))
                 } else {
@@ -105,8 +106,10 @@ export default function Edit() {
                     }
                     let items = data.sale_items;
                     setInvoiceNo(header.invoice_number);
-                    setSaleDate(header.sale_date);
+                    setSaleDate(formatDateTime(header.sale_date));
+                    setTaxAmount(header.taxable_amount);
                     setCustomer(header.customer_name);
+                    setMobileNumber(header.customer_mobile);
                     setDiscountType(header.discount_type)
                     let midItems = [];
                     for (let i = 0; i < items.length; i++) {
@@ -124,11 +127,11 @@ export default function Edit() {
                             tax: current_item.tax_percent,
                             total: current_item.total,
                             amount_item: current_item.total,
+                            tax_amount: current_item.tax_amount
                         }
 
                         midItems.push(obj)
                     }
-
                     setAllItems(midItems);
                     let current_total_fetch = 0
                     let tax_amount = 0;
@@ -136,10 +139,10 @@ export default function Edit() {
                         current_total_fetch = parseFloat(current_total_fetch) + parseFloat(item.total)
                         tax_amount = parseFloat(tax_amount) + parseFloat(item.tax_amount)
                     })
+                    setTaxAmount(tax_amount);
                     setTotalValue(current_total_fetch)
                     setFinalDiscountValue(final_discount_value)
                     setFinalDiscountCriteria(final_discount_criteria)
-                    setTaxAmount(tax_amount)
                     setPaymentMethod(header.payment_type)
                     setRemarks(header.remarks)
                 } else {
@@ -193,8 +196,6 @@ export default function Edit() {
                 tax_amount
             };
 
-
-
             if (currentEditItem) {
                 setCurrentEditItem('')
                 let new_list_edit = []
@@ -225,8 +226,8 @@ export default function Edit() {
                     total = parseFloat(total) + parseFloat(item.total);
                     tax_amount = parseFloat(tax_amount) + parseFloat(item.tax_amount)
                 })
-                setTaxAmount(tax_amount);
                 setTotalValue(total);
+                setTaxAmount(tax_amount);
                 setTotalValue(parseFloat(totalValue) + parseFloat(perItemAmount))
                 setAllItems(new_item_list);
             }
@@ -238,6 +239,7 @@ export default function Edit() {
             setItemDescription('');
             perItemAmount = 0;
             amount_item = 0;
+
         } else {
             toast.error('Fill all fields having *')
         }
@@ -250,7 +252,8 @@ export default function Edit() {
                 invoiceNo: invoiceNo,
                 saleDate: saleDate,
                 customer: customer,
-                discountType: discountType
+                mobile_number: mobile_number,
+                discountType: discountType,
             }
             let final = {
                 totalValue: totalValue,
@@ -259,7 +262,7 @@ export default function Edit() {
                 finalDiscountCriteria: finalDiscountCriteria,
                 remarks: remarks,
                 paymentMethod: paymentMethod,
-                tax_amount: tax_amount
+                tax_amount: taxableAmount
             }
 
             let final_array = [];
@@ -352,6 +355,10 @@ export default function Edit() {
                             <label for="customer">Customer</label>
                             <input value={customer} onChange={e => setCustomer(e.target.value)} type="text" class="form-control" id="customer" />
                         </div>
+                        <div class="form-group col-md-3">
+                            <label for="customermobile">Mobile Number:</label>
+                            <input value={mobile_number} onChange={e => setMobileNumber(e.target.value)} type="text" class="form-control" id="customermobile" />
+                        </div>
                     </div>
 
                     <div class="my-4 form-row">
@@ -430,7 +437,7 @@ export default function Edit() {
                     </div>}
                     <div>
                         <div>
-                            Taxable amount:- {tax_amount && tax_amount}
+                            Taxable amount:- {taxableAmount && taxableAmount}
                         </div> 
                     </div>
                     <div className='row mt-5 justify-content-between purchase-create-footer'>

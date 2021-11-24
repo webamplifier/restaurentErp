@@ -7,6 +7,7 @@ exports.up = function(knex) {
         table.string("invoice_number");
         table.string("sale_date");
         table.string("customer_name");
+        table.string("customer_mobile");
         table.string("total_supply");
         table.string("item_discount_percentage");
         table.string("item_discount_amount");

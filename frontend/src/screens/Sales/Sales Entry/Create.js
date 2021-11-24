@@ -13,6 +13,7 @@ export default function Create() {
     const [saleDate, setSaleDate] = React.useState(currentDate(new Date().toLocaleDateString()));
     const [tax, setTax] = React.useState(0);
     const [customer, setCustomer] = React.useState('');
+    const [mobile_number, setMobileNumber] = React.useState(' ');
     const [discountType, setDiscountType] = React.useState('Bill');
     const [currentProduct, setCurrentProduct] = React.useState('');
     const [qty, setQty] = React.useState(1);
@@ -177,6 +178,7 @@ export default function Create() {
                 invoiceNo : invoiceNo,
                 saleDate : saleDate,
                 customer : customer,
+                mobile_number: mobile_number,
                 discountType: discountType,
             }
             let final = {
@@ -276,6 +278,10 @@ export default function Create() {
                         <div class="form-group col-md-3">
                             <label for="customer">Customer</label>
                             <input value={customer} onChange={e => setCustomer(e.target.value)} type="text" class="form-control" id="customer" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="customermobile">Mobile Number:</label>
+                            <input value={mobile_number} onChange={e => setMobileNumber(e.target.value)} type="text" class="form-control" id="customermobile" />
                         </div>
                     </div>
 

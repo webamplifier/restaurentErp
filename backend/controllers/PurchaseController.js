@@ -36,6 +36,7 @@ router.create = async (req, res) => {
         invoice_number: header.invoiceNo,
         sale_date: await HELPERS.dateTime(),
         customer_name: header.customer,
+        customer_mobile : header.mobile_number,
         total_supply: final.totalValue,
         item_discount_percentage: '',
         item_discount_amount: 0,//There is no option of disount for items in project
@@ -160,7 +161,9 @@ router.fetchById = async (req, res) => {
     let sale_header = {};
     let sale_items = [];
 
-    await knex("sale_start").where("id", id).where('restaurent_id',req.user_data.restaurent_id).then(response => {
+    if (req.user_data.role == 2 || req.user_data.role == 1){
+    
+        await knex("sale_start").where("id", id).where('restaurent_id',req.user_data.restaurent_id).then(response => {
         if (response.length > 0) {
             sale_header = response[0];
             status = 200;
@@ -175,7 +178,11 @@ router.fetchById = async (req, res) => {
             message = "Purchase record has been fetched successfully"
         }
     }).catch(err => console.log(err))
-
+   }
+   else{
+    status = 300;
+    message = "You are not authorized to perform this action"
+   }
     return res.json({ status, message, sale_header, sale_items })
 }
 
@@ -195,11 +202,14 @@ router.update = async (req, res) => {
     let new_items_id = [];
 
     let items = JSON.parse(inputs.allItems)
+    
+    if (req.user_data.role == 2 || req.user_data.role == 1){
 
     let update = {
         invoice_number: header.invoiceNo,
         sale_date: header.saleDate,
         customer_name: header.customer,
+        customer_mobile: header.mobile_number,
         total_supply: final.totalValue,
         item_discount_percentage: '',
         item_discount_amount: 0,//their is no field of discount in items in project
@@ -225,7 +235,8 @@ router.update = async (req, res) => {
     }).catch(err => console.log(err))
 
     await knex("sale_start").where("id", id).where('restaurent_id',req.user_data.restaurent_id).update(update).then(response => {
-        // 
+        status = 200;
+        message = "Sale has been updated successfully!"
     }).catch(err => console.log(err))
 
     if (sale_start_id) {
@@ -300,7 +311,8 @@ router.update = async (req, res) => {
                 let item_id = 0;
                 let item_obj = {
                     uuid: await HELPERS.getKnexUuid(knex),
-                    purchase_start_id: purchase_start_id,
+                    restaurent_id: req.user_data.restaurent_id,
+                    sale_start_id: sale_start_id,
                     product_id: data.item.value,
                     product_name: data.item.label,
                     description: data.description,
@@ -401,7 +413,11 @@ router.update = async (req, res) => {
         //     })
             
         // }
-
+    }
+    else{
+        status = 300;
+        message = "You are not authorized to perform this action"
+    }
         return res.json({ status, message })
 
     }
@@ -413,6 +429,8 @@ router.delete = async (req, res) => {
     let status = 500;
     let message = "Oops something went wrong!";
     let id = req.params.id;
+    
+    if (req.user_data.role == 2 || req.user_data.role == 1){
 
     await knex("sale_start").where("id", id).where('restaurent_id',req.user_data.restaurent_id).del().then(response => {
         if (response) {
@@ -427,7 +445,11 @@ router.delete = async (req, res) => {
             message = "Sale items has been deleted!"
         }
     }).catch(err => console.log(err))
-
+    }
+    else{
+        status = 300;
+        message = "You are not authorized to perform this action"
+    }
     return res.json({ status, message })
 }
 

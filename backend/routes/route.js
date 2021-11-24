@@ -73,11 +73,11 @@ router.get('/deleteclient/:id',Middlewares.checkAuth,CustomerController.delete);
 
 
 // purchase related routes
-router.get('/purchaseList',Middlewares.checkAuth,PurchaseController.list)
+router.get('/salesList',Middlewares.checkAuth,PurchaseController.list)
 router.post('/create/sales',Middlewares.checkAuth,PurchaseController.create);
 router.get('/detail/sales/:id',Middlewares.checkAuth,PurchaseController.fetchById)
 router.post('/edit/sales/:id',Middlewares.checkAuth,PurchaseController.update)
-router.get('/deletePurchase/:id',Middlewares.checkAuth,PurchaseController.delete)
+router.get('/delete/sales/:id',Middlewares.checkAuth,PurchaseController.delete)
 
 //inventory related routes
 router.get('/inventoryList',Middlewares.checkAuth,InventoryController.list)
