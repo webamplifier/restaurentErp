@@ -7,8 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import {useHistory} from 'react-router-dom'
 
 export default function Create() {
-    const history = useHistory();
-    
+    const history = useHistory();    
     const { user,setLoad } = React.useContext(userContext);
     const [invoiceNo, setInvoiceNo] = React.useState('');
     const [saleDate, setSaleDate] = React.useState(currentDate(new Date().toLocaleDateString()));
@@ -37,15 +36,14 @@ export default function Create() {
     const [finalDiscountValue, setFinalDiscountValue] = React.useState(0);
     const [paymentMethod, setPaymentMethod] = React.useState('cash');
     const [totalValue, setTotalValue] = React.useState(0);
-
+    const [taxableAmount, setTaxAmount] = React.useState(0);
     //edit related states
     const [currentEditItem, setCurrentEditItem] = React.useState('');
 
     //item based variables
     let perItemAmount = 0;
     let amount_item = 0;
-    let tax_amount = 0;
-
+    let tax_amount = 0; 
     React.useEffect(() => {
         setLoad(true)
 
@@ -122,7 +120,8 @@ export default function Create() {
                 tax: tax,
                 mrp: mrp,
                 total: perItemAmount,
-                amount_item,
+                amount_item: amount_item,
+                tax_amount: tax_amount
             };
 
             if (currentEditItem) {
@@ -136,19 +135,24 @@ export default function Create() {
                     }
                 })
                 let total = 0;
+                let tax_amount = 0;
                 new_list_edit.map(item=>{
                     total = parseFloat(total) + parseFloat(item.total);
+                    tax_amount = parseFloat(tax_amount) + parseFloat(item.tax_amount); 
                 })
                 setTotalValue(total);
+                setTaxAmount(tax_amount);
                 setAllItems(new_list_edit);
             } else {
                 let new_item_list = [...allItems, new_item_dict];
                 let total = 0;
+                let tax_amount = 0;
                 new_item_list.map(item=>{
                     total = parseFloat(total) + parseFloat(item.total);
+                    tax_amount = parseFloat(tax_amount) + parseFloat(item.tax_amount);
                 })
                 setTotalValue(total);
-
+                setTaxAmount(tax_amount);
                 setTotalValue(parseFloat(totalValue) + parseFloat(perItemAmount))
                 setAllItems(new_item_list);
             }
@@ -173,6 +177,7 @@ export default function Create() {
                 invoiceNo : invoiceNo,
                 saleDate : saleDate,
                 customer : customer,
+                discountType: discountType,
             }
             let final = {
                 totalValue : totalValue,
@@ -181,6 +186,7 @@ export default function Create() {
                 finalDiscountCriteria : finalDiscountCriteria,
                 remarks : remarks,
                 paymentMethod : paymentMethod,
+                tax_amount: taxableAmount
             }
 
             let final_array = [];
@@ -222,8 +228,9 @@ export default function Create() {
         setItemDescription(item.description)
         setQty(item.qty);
         setTax(item.tax);
-        setMrp(mrp);
+        setMrp(item.mrp);
         perItemAmount = item.total;
+        tax_amount = item.tax_amount;
     }
 
     // if (allItems.length > 0) {
@@ -237,9 +244,16 @@ export default function Create() {
                 new_item.push(item)
             }
         })
+        let total = 0;
+        let tax_amount = 0;
+        new_item.map(item => {
+        total = parseFloat(total) + parseFloat(item.total);
+        tax_amount = parseFloat(tax_amount) + parseFloat(item.tax_amount)
+    })
+        setTaxAmount(tax_amount);
+        setTotalValue(total);    
         setAllItems(new_item);
-    }
-
+     }
     function setCurrentProductFunc(value){
         setCurrentProduct(value);
         setMrp(value.mrp)
@@ -252,12 +266,12 @@ export default function Create() {
                 <div className='p-sm-5 px-md-3 create-form-field create-purchase-page'>
                     <div class="py-4 px-2 form-row create-purchase-header">
                         <div class="form-group col-md-3">
-                            <label for="invoice-number">Invoice No.<span className='required-label'>*</span></label>
-                            <input value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} type="text" class="form-control" id="invoice-number" required />
+                            <label for="invoice-number">Invoice No.</label>
+                            <input value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} type="text" class="form-control" id="invoice-number" />
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="date">Sale Date<span className='required-label'>*</span></label>
-                            <input value={saleDate} readOnly type="date" class="form-control" id="date" required />
+                            <label for="date">Sale Date</label>
+                            <input value={saleDate} readOnly type="date" class="form-control" id="date" />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="customer">Customer</label>
@@ -339,11 +353,11 @@ export default function Create() {
                             </tbody>
                         </table>
                     </div>}
-                    {/* <div>
+                    <div>
                         <div>
-                            Taxable amount:- {discountAmount && discountAmount}
+                            Taxable amount:- {taxableAmount && taxableAmount}
                         </div> 
-                    </div> */}
+                    </div>
                     <div className='row mt-5 justify-content-between purchase-create-footer'>
                         <div class="form-group col-md-5">
                             <label for="exampleFormControlTextarea1">Remarks</label>

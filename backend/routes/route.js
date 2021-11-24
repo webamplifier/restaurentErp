@@ -74,9 +74,9 @@ router.get('/deleteclient/:id',Middlewares.checkAuth,CustomerController.delete);
 
 // purchase related routes
 router.get('/purchaseList',Middlewares.checkAuth,PurchaseController.list)
-router.post('/createPurchase',Middlewares.checkAuth,PurchaseController.create);
-router.get('/getPurchaseById/:id',Middlewares.checkAuth,PurchaseController.fetchById)
-router.post('/updatePurchaseEntry/:id',Middlewares.checkAuth,PurchaseController.update)
+router.post('/create/sales',Middlewares.checkAuth,PurchaseController.create);
+router.get('/detail/sales/:id',Middlewares.checkAuth,PurchaseController.fetchById)
+router.post('/edit/sales/:id',Middlewares.checkAuth,PurchaseController.update)
 router.get('/deletePurchase/:id',Middlewares.checkAuth,PurchaseController.delete)
 
 //inventory related routes
