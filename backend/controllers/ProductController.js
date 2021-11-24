@@ -7,8 +7,9 @@ router.list = async (req,res) => {
     let status = 500;
     let message = 'Oops something went wrong!';
     let product_list = [];
+    let tax_list = HELPERS.tax_arr
 
-    await knex('products').orderBy("id","desc").then(response=>{
+    await knex('products').where('restaurent_id',req.user_data.restaurent_id).orderBy("id","desc").then(response=>{
         if (response){
             status = 200;
             message = 'Product list has been fetched successfully!';
@@ -16,7 +17,7 @@ router.list = async (req,res) => {
         }
     }).catch(err=>console.log(err))
 
-    return res.json({status,message,product_list})
+    return res.json({status,message,product_list,tax_list})
 }
 
 // this below function is used to create the products
@@ -32,7 +33,8 @@ router.create = async (req,res) => {
         stock_quantity: inputs.stock_quantity,
         created_by: req.user_data.id,
         created_by_name: req.user_data.name,
-        created_at: HELPERS.dateTime()
+        created_at: HELPERS.dateTime(),
+        restaurent_id : req.user_data.restaurent_id
     }
 
     await knex('products').insert(create_obj).then(response=>{

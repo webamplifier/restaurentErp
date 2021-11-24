@@ -22,6 +22,8 @@ export default function Create() {
     const [itemDescription, setItemDescription] = React.useState('');
     const [remarks, setRemarks] = React.useState('');
 
+    const [taxList,setTaxList] = React.useState([])
+
     const [allProducts, setAllProducts] = React.useState([]);
     const [allItems, setAllItems] = React.useState([]);
 
@@ -43,6 +45,7 @@ export default function Create() {
     //item based variables
     let perItemAmount = 0;
     let amount_item = 0;
+    let tax_amount = 0;
 
     React.useEffect(() => {
         setLoad(true)
@@ -61,11 +64,12 @@ export default function Create() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
+                    setTaxList(data?.tax_list)
                     setAllProducts(data?.product_list?.map(item=>{
                         return {
                             value : item.id,
                             label : item.name,
-                            type : item.type
+                            mrp : item.price
                         }
                     }))
                 } else {
@@ -81,7 +85,8 @@ export default function Create() {
     const calculateTotal = () => {
         if (mrp > 0 && qty > 0) {
             amount_item = parseFloat(mrp) * parseFloat(qty); //amount before tax
-            perItemAmount = amount_item
+            tax_amount = (parseFloat(amount_item)/100) * parseFloat(tax)
+            perItemAmount = amount_item + tax_amount
         }
     }
     calculateTotal()
@@ -110,7 +115,7 @@ export default function Create() {
     calculateFinalPrice()
 
     const handleSubmitItem = () => {
-        if (invoiceNo && saleDate && currentProduct && qty) {
+        if (currentProduct && qty) {
             let new_item_dict = {
                 item: currentProduct,
                 description: itemDescription,
@@ -151,7 +156,7 @@ export default function Create() {
 
             setCurrentProduct('');
             setQty(1);
-            setTax("");
+            setTax("0");
             setMrp(0);
             setItemDescription('');
             perItemAmount = 0;
@@ -236,6 +241,11 @@ export default function Create() {
         setAllItems(new_item);
     }
 
+    function setCurrentProductFunc(value){
+        setCurrentProduct(value);
+        setMrp(value.mrp)
+    }
+
     return (
         <div className="container full-size-create-page-main-section">
             <ToastContainer />
@@ -259,7 +269,7 @@ export default function Create() {
                     <div class="my-4 form-row">
                         <div class="form-group col-md-4">
                             <label for="invoice-number">Item<span className='required-label'>*</span></label>
-                            <Select options={allProducts} value={currentProduct} onChange={setCurrentProduct} />
+                            <Select options={allProducts} value={currentProduct} onChange={setCurrentProductFunc} />
                         </div>
                         <div class="form-group col-md-4">
                             <label for="invoice-number">Item Description</label>
@@ -276,10 +286,9 @@ export default function Create() {
                         <div class="form-group col-md-4">
                             <label for="tax">Tax:</label>
                             <select id="tax" value={tax} onChange={e => setTax(e.target.value)} class="form-control" required>
-                                <option value="">Select Tax</option>
-                                <option value='1%'>1%</option>
-                                <option value='2%'>2%</option>
-                                <option value='5%'>5%</option>
+                                {taxList?.map((item,index)=>(
+                                    <option value={item.value} key={index}>{item.label}</option>
+                                ))}
                             </select>
                         </div>
                         <div class="form-group col-md-4 row">

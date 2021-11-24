@@ -17,25 +17,17 @@ function current_date(){
     return moment().tz(process.env.TIME_ZONE).format('YYYY-MM-DD')
 }
 
-function fetchParentPermission(knex) {
-    return new Promise(async function (resolve, reject) {
-        await knex('Parent_Permission').then(response => {
-            if (response.length > 0) {
-                resolve(response)
-            }
-        }).catch(err => reject(err))
-    })
+const tax_arr = [
+    {value : 0,label : '0%'},
+    {value : 8,label : '8%'},
+    {value : 12,label : '12%'},
+    {value : 18,label : '18%'},
+]
 
-}
-
-const bike_type = ["Honda Unicorn 160 cc","Bajaj Boxer BM150","TVS Apache RTR 180","TVS Stryker 125 cc","Hero Hunk 150 cc","Bajaj Pulsar 150 cc"];
-const service_location = ["khetan","salmiya"]
 
 module.exports = {
     getKnexUuid,
     dateTime,
-    fetchParentPermission,
     current_date,
-    bike_type,
-    service_location
+    tax_arr
 }
