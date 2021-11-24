@@ -33,7 +33,7 @@ router.fetchById = async (req,res) => {
     let message = 'Oops something went wrong!';
     let {id} = req.params;
     let restaurant_detail = {};
-
+    if (req.user_data.role == 1){
     await knex('restaurents').where('id',id).then(response=>{
         if (response.length > 0){
             status = 200;
@@ -41,7 +41,11 @@ router.fetchById = async (req,res) => {
             restaurant_detail = response[0];
         }
     }).catch(err=>console.log(err));
-
+     }
+     else{
+        status = 300;
+        message = "You are not authorized to perform this action"
+     }
     return res.json({status,message,restaurant_detail});
 }
 
@@ -51,7 +55,7 @@ router.create = async (req, res) => {
     let message = "Oops something went wrong!";
     let inputs = req.body;
 
-
+    if (req.user_data.role == 1){
     await knex("restaurents").where("email", inputs.email).then(async response => {
         if (response.length > 0) {
             status = 300;
@@ -68,7 +72,7 @@ router.create = async (req, res) => {
                 expiry_date : inputs.expiry_date,
                 reminder_date : inputs.reminder_date
             }
-
+           
             await knex("restaurents").insert(create_obj).then(response => {
                 if (response) {
                     status = 200;
@@ -77,7 +81,10 @@ router.create = async (req, res) => {
             }).catch(err => console.log(err))
         }
     })
-
+    }else{
+        status = 300;
+        message = "You are not authorized to perform this action"
+    }
 
     return res.json({ status, message })
 }
@@ -89,6 +96,7 @@ router.update = async (req,res) => {
     let {id} = req.params;
     let inputs = req.body;
 
+    if (req.user_data.role == 1){
     await knex("restaurents").where("id", id).then(async response => {
         if (response[0].email === inputs.email) {
              let update_obj = {
@@ -136,6 +144,10 @@ router.update = async (req,res) => {
             })
         }
         })
+    }else{
+        status = 300;
+        message = "You are not authorized to perform this action"
+    }
 
     return res.json({status,message})
 }
