@@ -212,7 +212,16 @@ export default function Create() {
                     const data = await response.json();
                     setLoad(false)
                     if (data.status === 200){
-                        window.location.reload();
+                        toast.success(data.message);
+                        setInvoiceNo('');
+                        setCustomer('');
+                        setMobileNumber('');
+                        setTaxAmount(0);
+                        setAllItems('');
+                        setTotalValue(0);
+                        setFinalDiscountValue(0);
+                        setFinalDiscountCriteria('');
+                        finalAmount = 0;
                     }else{
                         toast.error(data.message);
                     }

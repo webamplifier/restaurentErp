@@ -44,7 +44,15 @@ export default function Create() {
                     setLoad(false)
 
                     if (data.status === 200) {
-                        return window.location = window.location.origin + '/#/restaurantlist'
+                        toast.success(data.message);
+                        setName('');
+                        setEmail('');
+                        setMobile('');
+                        setAddress('');
+                        setFoodLicenseNumber('');
+                        setGSTNumber('');
+                        setExpiryDate('');
+                        setReminderDate('');
                     } else {
                         toast.error(data.message)
                     }

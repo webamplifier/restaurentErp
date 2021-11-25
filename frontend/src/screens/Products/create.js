@@ -39,7 +39,10 @@ export default function Create() {
                 setLoad(false);
 
                 if (data.status === 200){
-                    return window.location = window.location.origin + '/#/products'
+                    toast.success(data.message);
+                    setName('');
+                    setPrice(0);
+                    setStockQuantity(0);
                 }else{
                     toast.error(data.message)
                 }

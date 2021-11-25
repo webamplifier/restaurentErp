@@ -13,8 +13,8 @@ const PurchaseController = require("../controllers/PurchaseController")
 const InventoryController = require("../controllers/InventoryController");
 const RecieptController= require("../controllers/RecieptController");
 
-const RestaurentController = require("../controllers/RestaurentController")
-
+const RestaurentController = require("../controllers/RestaurentController");
+const ExpenseController= require("../controllers/ExpenseController");
 
 const router = express.Router();
 
@@ -33,6 +33,13 @@ router.post('/createRestaurant',Middlewares.checkAuth,RestaurentController.creat
 router.get('/restaurantlist',Middlewares.checkAuth,RestaurentController.list);
 router.get('/restaurantById/:id',Middlewares.checkAuth,RestaurentController.fetchById);
 router.post('/updaterestaurant/:id',Middlewares.checkAuth,RestaurentController.update);
+
+//expense routes
+router.post('/createexpense',Middlewares.checkAuth,ExpenseController.create);
+router.get('/expenselist',Middlewares.checkAuth,ExpenseController.list);
+router.get('/expenseById/:id',Middlewares.checkAuth,ExpenseController.fetchById);
+router.post('/updateexpense/:id',Middlewares.checkAuth,ExpenseController.update);
+router.get('/deleteexpense/:id',Middlewares.checkAuth,ExpenseController.delete);
 
 // category routes
 router.get('/categorylist',Middlewares.checkAuth,CategoryController.list);

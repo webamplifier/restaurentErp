@@ -29,6 +29,11 @@ const _nav =  [
         name: 'Products',
         to: '/products',
       },
+      {
+        _tag: 'CSidebarNavItem',
+        name: 'Expense',
+        to: '/create/expense',
+      },
     ],
   },
   {
@@ -42,20 +47,6 @@ const _nav =  [
         name: 'Sales Entry',
         to: '/create/sales',
       }
-    ],
-  },
-  {
-    _tag: 'CSidebarNavDropdown',
-    name: 'Expense',
-    route: '/base',
-    icon: 'cil-puzzle',
-    _children: [
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Expense Entry',
-        to: '/create/expense',
-      },
-      
     ],
   },
   {

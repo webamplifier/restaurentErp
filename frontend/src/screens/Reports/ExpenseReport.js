@@ -19,8 +19,8 @@ const getBadge = status => {
 
 export default function ExpenseReport() {
     const { user,setLoad } = React.useContext(userContext);
-    const fields = ['#', 'to','date','total_amount', 'action'];
-    const [purchaseList, setPurchaseList] = React.useState([]);
+    const fields = ['#', 'expense_date','to','item','paid_Amount','action'];
+    const [expenseList, setExpenseList] = React.useState([]);
     const [modal, setModal] = React.useState(false);
     const [paymodal, setPayModal] = React.useState(false);
     const [payAmount, setPayAmount] = React.useState('');
@@ -30,7 +30,7 @@ export default function ExpenseReport() {
     const deleteEntry = () => {
         setLoad(true)
         async function deleteData() {
-            const response = await fetch(url + 'expense-delete/' + id, {
+            const response = await fetch(url + 'deleteexpense/' + id, {
                 method: 'GET',
                 headers: {
                     'Authorization': user?.token
@@ -42,7 +42,7 @@ export default function ExpenseReport() {
                 setModal(false);
                 setId('');
                 async function fetchData() {
-                    const response = await fetch(url + 'expense-list', {
+                    const response = await fetch(url + 'expenselist', {
                         method: 'GET',
                         headers: {
                             'Authorization': user?.token
@@ -53,7 +53,7 @@ export default function ExpenseReport() {
                         const data = await response.json();
                         setLoad(false)
                         if (data.status === 200) {
-                            setPurchaseList(data.expense_list);
+                            setExpenseList(data.expense_list);
                         } else {
                             toast.error(data.message);
                         }
@@ -76,7 +76,7 @@ export default function ExpenseReport() {
     React.useEffect(() => {
         setLoad(true)
         async function fetchData() {
-            const response = await fetch(url + 'expense-list', {
+            const response = await fetch(url + 'expenselist', {
                 method: 'GET',
                 headers: {
                     'Authorization': user?.token
@@ -87,7 +87,7 @@ export default function ExpenseReport() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
-                    setPurchaseList(data.expense_list);
+                    setExpenseList(data.expense_list);
                 } else {
                     toast.error(data.message);
                 }
@@ -105,7 +105,7 @@ export default function ExpenseReport() {
                 <CCard>
                     <CCardBody>
                         <CDataTable
-                            items={purchaseList}
+                            items={expenseList}
                             fields={fields}
                             columnFilter
                             tableFilter
@@ -120,9 +120,24 @@ export default function ExpenseReport() {
                                         {index + 1}
                                     </td>
                                 ),
-                                'total_amount' : (item,index) => (
+                                'expense_date':(item)=>(
                                     <td>
-                                        {item.round_off_total}
+                                        {item.expense_date.split(' ')[0]}
+                                    </td>
+                                ),
+                                'to':(item)=>(
+                                    <td>
+                                        {item.name}
+                                    </td>
+                                ),
+                                'item':(item)=>(
+                                    <td>
+                                    {item.item_name}
+                                    </td>
+                                ),
+                                'paid_Amount' : (item) => (
+                                    <td>
+                                        {item.paid_amount}
                                     </td>
                                 ),
                                 'action': (item) => (

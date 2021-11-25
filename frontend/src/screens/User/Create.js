@@ -64,9 +64,13 @@ export default function Create() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
-                    return window.location = window.location.origin + '/#/userlist'
+                    toast.success(data.message);
+                    setName('');
+                    setEmail('');
+                    setPassword('');
+                    setRole('');
                 } else {
-                    toast.error(data.message)
+                    toast.error(data.message);
                 }
             }
         }
