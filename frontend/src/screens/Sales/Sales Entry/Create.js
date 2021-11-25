@@ -276,10 +276,10 @@ export default function Create() {
             <form>
                 <div className='p-sm-5 px-md-3 create-form-field create-purchase-page'>
                     <div class="py-4 px-2 form-row create-purchase-header">
-                        <div class="form-group col-md-3">
+                        {/* <div class="form-group col-md-3">
                             <label for="invoice-number">Invoice No.</label>
                             <input value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} type="text" class="form-control" id="invoice-number" />
-                        </div>
+                        </div> */}
                         <div class="form-group col-md-4">
                             <label for="date">Sale Date</label>
                             <input value={saleDate} readOnly type="date" class="form-control" id="date" />

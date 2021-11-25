@@ -8,7 +8,8 @@ router.list = async (req, res) => {
     let message = "Oops something went wrong!";
     let sale_list = [];
 
-    await knex("sale_start").where('restaurent_id', req.user_data.restaurent_id).then(response => {
+
+    await knex("sale_start").where('restaurent_id', req.user_data.restaurent_id).orderBy("id", "desc").then(response => {
         sale_list = response;
         status = 200;
         message = "Sale record has been fetched!"
@@ -30,79 +31,89 @@ router.create = async (req, res) => {
 
     let items = JSON.parse(inputs.allItems)
 
-    let create = {
-        uuid: await HELPERS.getKnexUuid(knex),
-        restaurent_id: req.user_data.restaurent_id,
-        invoice_number: header.invoiceNo,
-        sale_date: header?.saleDate ? header?.saleDate : await HELPERS.dateTime(),
-        customer_name: header.customer,
-        customer_mobile: header.mobile_number,
-        total_supply: final.totalValue,
-        item_discount_percentage: '',
-        item_discount_amount: 0,//There is no option of disount for items in project
-        bill_discount_percentage: final.finalDiscountCriteria == "percent" ? final.finalDiscountValue : '',
-        bill_discount_amount: final.finalDiscountCriteria == "amount" ? final.finalDiscountValue : '',
-        total_before_roundoff: final.finalAmount,
-        total_after_roundoff: final.finalAmount,
-        roundoff: 0, //round off 0 becuase we are not performing round off here
-        discount_type: header.discountType,
-        taxable_amount: final.tax_amount,
-        remarks: final.remarks,
-        amount_paid: 0,//there is no option to enter paid amount in project
-        payment_type: final.paymentMethod,
-        remain_amount: 0,//there is no option to enter remain amount in project
-        remain_amount_date: null,//there is no option to enter remain payment date in project
-        created_by: req.user_data.id,
-        created_by_name: req.user_data.name,
-        created_at: await HELPERS.dateTime(),
-        status: 2,
-    };
+    let invoice_number = 0
 
-    await knex("sale_start").where('restaurent_id', req.user_data.restaurent_id).insert(create, "id").then(response => {
-        sale_start_id = response[0];
-    }).catch(err => console.log(err))
+    let query = `SELECT * FROM sale_start where sale_start.restaurent_id = ${req.user_data.restaurent_id} order by sale_start.id DESC LIMIT 0,1`;
 
-    if (sale_start_id) {
-        for (let i = 0; i < items.length; i++) {
-            let data = items[i];
-            let item_id = 0;
-
-            await knex("products").where("id", data.item.value).where('restaurent_id', req.user_data.restaurent_id).then(async responseProduct => {
-                if (responseProduct) {
-                    let item_obj = {
-                        uuid: await HELPERS.getKnexUuid(knex),
-                        restaurent_id: req.user_data.restaurent_id,
-                        sale_start_id: sale_start_id,
-                        product_id: data.item.value,
-                        product_name: data.item.label,
-                        description: data.description,
-                        qty: data.qty,
-                        mrp: data.mrp,
-                        free_qty: 0, //their is no any option for free in this project
-                        amount_before_tax: data.amount_item,
-                        tax_percent: data.tax,
-                        amount_after_tax: data.total,
-                        tax_amount: data.tax_amount,
-                        amount_before_discount: 0, //their is no discount option for items in project
-                        discount_percent: 0, //their is no discount option for items in project
-                        amount_after_discount: 0, //their is no discount option for items in project
-                        discount_amount: 0, //their is no discount option for items in project
-                        total: data.total
-                    }
-
-                    await knex("sale_items").where('restaurent_id', req.user_data.restaurent_id).insert(item_obj, "id").then(response => {
-                        if (response[0]) {
-                            item_id = response[0];
-                            status = 200;
-                            message = "Sale has been created successfully!"
-                        }
-                    }).catch(err => console.log(err))
-                }
-            })
-
+    await knex.raw(query).then(async response => {
+        if (response[0].length > 0) {
+            invoice_number = parseInt(response[0][0].invoice_number)
         }
-    }
 
+        let create = {
+            uuid: await HELPERS.getKnexUuid(knex),
+            restaurent_id: req.user_data.restaurent_id,
+            invoice_number: invoice_number + 1,
+            sale_date: header?.saleDate ? header?.saleDate : await HELPERS.dateTime(),
+            customer_name: header.customer,
+            customer_mobile: header.mobile_number,
+            total_supply: final.totalValue,
+            item_discount_percentage: '',
+            item_discount_amount: 0,//There is no option of disount for items in project
+            bill_discount_percentage: final.finalDiscountCriteria == "percent" ? final.finalDiscountValue : '',
+            bill_discount_amount: final.finalDiscountCriteria == "amount" ? final.finalDiscountValue : '',
+            total_before_roundoff: final.finalAmount,
+            total_after_roundoff: final.finalAmount,
+            roundoff: 0, //round off 0 becuase we are not performing round off here
+            discount_type: header.discountType,
+            taxable_amount: final.tax_amount,
+            remarks: final.remarks,
+            amount_paid: 0,//there is no option to enter paid amount in project
+            payment_type: final.paymentMethod,
+            remain_amount: 0,//there is no option to enter remain amount in project
+            remain_amount_date: null,//there is no option to enter remain payment date in project
+            created_by: req.user_data.id,
+            created_by_name: req.user_data.name,
+            created_at: await HELPERS.dateTime(),
+            status: 2,
+        };
+
+        await knex("sale_start").where('restaurent_id', req.user_data.restaurent_id).insert(create, "id").then(response => {
+            sale_start_id = response[0];
+        }).catch(err => console.log(err))
+
+        if (sale_start_id) {
+            for (let i = 0; i < items.length; i++) {
+                let data = items[i];
+                let item_id = 0;
+
+                await knex("products").where("id", data.item.value).where('restaurent_id', req.user_data.restaurent_id).then(async responseProduct => {
+                    if (responseProduct) {
+                        let item_obj = {
+                            uuid: await HELPERS.getKnexUuid(knex),
+                            restaurent_id: req.user_data.restaurent_id,
+                            sale_start_id: sale_start_id,
+                            product_id: data.item.value,
+                            product_name: data.item.label,
+                            description: data.description,
+                            qty: data.qty,
+                            mrp: data.mrp,
+                            free_qty: 0, //their is no any option for free in this project
+                            amount_before_tax: data.amount_item,
+                            tax_percent: data.tax,
+                            amount_after_tax: data.total,
+                            tax_amount: data.tax_amount,
+                            amount_before_discount: 0, //their is no discount option for items in project
+                            discount_percent: 0, //their is no discount option for items in project
+                            amount_after_discount: 0, //their is no discount option for items in project
+                            discount_amount: 0, //their is no discount option for items in project
+                            total: data.total
+                        }
+
+                        await knex("sale_items").where('restaurent_id', req.user_data.restaurent_id).insert(item_obj, "id").then(response => {
+                            if (response[0]) {
+                                item_id = response[0];
+                                status = 200;
+                                message = "Sale has been created successfully!"
+                            }
+                        }).catch(err => console.log(err))
+                    }
+                })
+
+            }
+        }
+
+    })
 
     return res.json({ status, message })
 

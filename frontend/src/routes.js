@@ -48,7 +48,7 @@ const ProductList = React.lazy(()=>import('./screens/Products/index'));
 const CreateProduct = React.lazy(()=>import('./screens/Products/create'));
 const EditProduct = React.lazy(()=>import('./screens/Products/edit'));
 
-const InventoryList = React.lazy(()=>import('./screens/Inventory/Index'));
+
 
 const SalesReport = React.lazy(()=>import('./screens/Reports/SalesReport'));
 const DayWiseSales = React.lazy(()=>import('./screens/Reports/DayWiseSales'));
@@ -122,7 +122,6 @@ const routes = [
   {path : '/products',exact : true,name : 'Product List',component:ProductList},
   {path : '/create/products',exact : true,name : 'Create Product',component:CreateProduct},
   {path : '/edit/products/:id',exact : true,name : 'Edit Product',component:EditProduct},  
-  {path : '/inventoryList',exact : true,name : 'Inventory List',component : InventoryList},
   {path : '/salesReport',exact : true,name : 'Sales Report',component : SalesReport},
   {path : '/DayWiseSales',exact : true,name : 'Day Wise Sales Report',component : DayWiseSales},
   {path : '/DayWiseProfit',exact : true,name : 'Day Wise Profit Report',component : DayWiseProfit},
