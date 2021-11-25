@@ -172,7 +172,7 @@ export default function Create() {
     }
 
     const finalSubmit = () => {
-        if (invoiceNo && saleDate && allItems.length > 0 && totalValue){
+        if (allItems.length > 0 && totalValue){
             setLoad(true)
             let header = {
                 invoiceNo : invoiceNo,
