@@ -5,8 +5,6 @@ import { url } from 'src/helpers/helpers';
 import { toast, ToastContainer } from 'react-toastify'
 import { userContext } from '../../context/UserContext'
 import CustomModal from '../../components/CustomModal';
-import PayModal from '../../components/PayModal';
-
 const getBadge = status => {
     switch (status) {
         case 2: return 'success'
@@ -22,9 +20,6 @@ export default function ExpenseReport() {
     const fields = ['#', 'expense_date','to','item','paid_Amount','action'];
     const [expenseList, setExpenseList] = React.useState([]);
     const [modal, setModal] = React.useState(false);
-    const [paymodal, setPayModal] = React.useState(false);
-    const [payAmount, setPayAmount] = React.useState('');
-    const [paymentMode, setPaymentMode] = React.useState('')
     const [id, setId] = React.useState('')
 
     const deleteEntry = () => {
