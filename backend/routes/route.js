@@ -1,9 +1,8 @@
 const express = require('express');
 const UserController = require("../controllers/UserController");
 const ProductController = require('../controllers/ProductController');
-const EstimationController = require('../controllers/EstimationController');
 const Middlewares = require('../middlewares/Middleware');
-const PurchaseController = require("../controllers/PurchaseController")
+const SalesController = require("../controllers/SalesController")
 
 const RestaurentController = require("../controllers/RestaurentController");
 const ExpenseController= require("../controllers/ExpenseController");
@@ -38,20 +37,11 @@ router.get('/productById/:id',Middlewares.checkAuth,ProductController.fetchById)
 router.post('/updateproduct/:id',Middlewares.checkAuth,ProductController.update);
 router.get('/deleteproduct/:id',Middlewares.checkAuth,ProductController.delete);
 
-// purchase related routes
-router.get('/salesList',Middlewares.checkAuth,PurchaseController.list)
-router.post('/create/sales',Middlewares.checkAuth,PurchaseController.create);
-router.get('/detail/sales/:id',Middlewares.checkAuth,PurchaseController.fetchById)
-router.post('/edit/sales/:id',Middlewares.checkAuth,PurchaseController.update)
-router.get('/delete/sales/:id',Middlewares.checkAuth,PurchaseController.delete)
-
-// estimation routes
-router.get('/fetch-needs-estimation',Middlewares.checkAuth,EstimationController.fetchSalesNeeds);
-router.post('/create-estimation',Middlewares.checkAuth,EstimationController.create);
-router.post('/update-estimation/:id',Middlewares.checkAuth,EstimationController.update);
-router.get('/estimation-list',Middlewares.checkAuth,EstimationController.list)
-router.get('/estimation-detail/:id',Middlewares.checkAuth,EstimationController.getDetailById);
-router.get('/delete/estimation/:id',Middlewares.checkAuth,EstimationController.delete)
-router.post('/filter-sales-report',Middlewares.checkAuth,EstimationController.filterReport)
+// sales related routes
+router.get('/salesList',Middlewares.checkAuth,SalesController.list)
+router.post('/create/sales',Middlewares.checkAuth,SalesController.create);
+router.get('/detail/sales/:id',Middlewares.checkAuth,SalesController.fetchById)
+router.post('/edit/sales/:id',Middlewares.checkAuth,SalesController.update)
+router.get('/delete/sales/:id',Middlewares.checkAuth,SalesController.delete)
 
 module.exports = router;
