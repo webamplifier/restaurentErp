@@ -23,6 +23,7 @@ router.post('/createRestaurant',Middlewares.checkAuth,RestaurentController.creat
 router.get('/restaurantlist',Middlewares.checkAuth,RestaurentController.list);
 router.get('/restaurantById/:id',Middlewares.checkAuth,RestaurentController.fetchById);
 router.post('/updaterestaurant/:id',Middlewares.checkAuth,RestaurentController.update);
+router.get('/deleteRestaurent/:id',Middlewares.checkAuth,RestaurentController.delete);
 
 //expense routes
 router.post('/createexpense',Middlewares.checkAuth,ExpenseController.create);
@@ -43,5 +44,6 @@ router.post('/create/sales',Middlewares.checkAuth,SalesController.create);
 router.get('/detail/sales/:id',Middlewares.checkAuth,SalesController.fetchById)
 router.post('/edit/sales/:id',Middlewares.checkAuth,SalesController.update)
 router.get('/delete/sales/:id',Middlewares.checkAuth,SalesController.delete)
+router.get('/fetchSalesDetail/:id',Middlewares.checkAuth,SalesController.fetchSalesDetail)
 
 module.exports = router;

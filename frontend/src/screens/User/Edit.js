@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom'
 
 export default function Edit() {
     const { id } = useParams();
-    const { user,setLoad } = React.useContext(userContext);
+    const { user, setLoad } = React.useContext(userContext);
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [role, setRole] = React.useState('');
@@ -19,60 +19,62 @@ export default function Edit() {
         setLoad(true)
         e.preventDefault();
         async function submitData() {
-            if(name && role && email && currentRestaurant){
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('email', email);
-            formData.append('restaurent_id', currentRestaurant.value);
-            formData.append('restaurant_name', currentRestaurant.label);
-            formData.append('role', role);
-            
-            const response = await fetch(url + 'updateuser/' + id, {
-                method: 'POST',
-                headers: {
-                    'Authorization': user?.token
-                },
-                body: formData
-            })
+            if (name && role && email) {
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('email', email);
+                formData.append('restaurent_id', currentRestaurant.value);
+                formData.append('restaurant_name', currentRestaurant.label);
+                formData.append('role', role);
 
-            if (response.ok === true) {
-                const data = await response.json();
-                setLoad(false)
-                if (data.status === 200) {
-                    return window.location = window.location.origin + '/#/userList'
-                } else {
-                    toast.error(data.message)
+                const response = await fetch(url + 'updateuser/' + id, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': user?.token
+                    },
+                    body: formData
+                })
+
+                if (response.ok === true) {
+                    const data = await response.json();
+                    setLoad(false)
+                    if (data.status === 200) {
+                        return window.location = window.location.origin + '/#/userList'
+                    } else {
+                        toast.error(data.message)
+                    }
                 }
+            } else {
+                toast.error("Please fill the fields with *");
             }
-        }else{
-            toast.error("Please fill the fields with *");
-        }
         }
         submitData();
     }
 
     React.useEffect(() => {
         setLoad(true)
-        async function fetchRestaurants(){
-            const response = await fetch(url + 'restaurantlist',{
-                method : 'GET',
-                headers : {
-                    'Authorization' : user?.token
+        async function fetchRestaurants() {
+            const response = await fetch(url + 'restaurantlist', {
+                method: 'GET',
+                headers: {
+                    'Authorization': user?.token
                 }
             })
 
-            if (response.ok === true){
+            if (response.ok === true) {
                 setLoad(false)
                 const data = await response.json();
 
-                if (data.status === 200){
+                if (data.status === 200) {
                     setLoad(false)
-                    setAllRestaurants(data?.restaurant_list?.map(item=>{
+                    setAllRestaurants(data?.restaurant_list?.map(item => {
                         return {
-                            value : item.id,
-                            label : item.name
+                            value: item.id,
+                            label: item.name
                         }
                     }));
+                }else{
+                    toast.error(data.message)
                 }
             }
         }
@@ -88,14 +90,18 @@ export default function Edit() {
             if (response.ok === true) {
                 const data = await response.json();
                 setLoad(false)
-                const user_detail = data.user_detail;
-                setName(user_detail.name);
-                setEmail(user_detail.email);
-                setRole(user_detail.role);
-                setCurrentRestaurant({
-                    value : user_detail.restaurent_id,
-                    label : user_detail.restaurant_name
-                })
+                if (data.status == 200) {
+                    const user_detail = data.user_detail;
+                    setName(user_detail.name);
+                    setEmail(user_detail.email);
+                    setRole(user_detail.role);
+                    setCurrentRestaurant({
+                        value: user_detail.restaurent_id,
+                        label: user_detail.restaurant_name
+                    })
+                }else{
+                    toast.error(data.message)
+                }
             }
         }
         fetchData();
@@ -105,13 +111,13 @@ export default function Edit() {
         <div className="container create-page-main-section">
             <ToastContainer />
             <form onSubmit={e => handleSubmit(e)}>
-            <div className='p-sm-5 create-form-field'>
-                <div class="form-group row">
+                <div className='p-sm-5 create-form-field'>
+                    {user?.role == 1 && <div class="form-group row">
                         <label class="col-sm-2 col-form-label" for="exampleFormControlSelect1">Restaurant id:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
-                            <Select className="form-control" options={allRestaurants} value={currentRestaurant} onChange={setCurrentRestaurant} />    
+                            <Select className="form-control" options={allRestaurants} value={currentRestaurant} onChange={setCurrentRestaurant} />
                         </div>
-                    </div>
+                    </div>}
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Name:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
@@ -125,12 +131,12 @@ export default function Edit() {
                         </div>
                     </div>
                     <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Role:<span className='required-label'>*</span></label>
-                        <select className="form-control d-flex align-items-sm-center col-sm-10" value={role} onChange={e=>setRole(e.target.value)}>
+                        <label class="col-sm-2 col-form-label">Role:<span className='required-label'>*</span></label>
+                        <select className="form-control d-flex align-items-sm-center col-sm-10" value={role} onChange={e => setRole(e.target.value)}>
                             <option value="">Choose</option>
                             <option value="2">Restaurant_admin</option>
                             <option value="3">Staff</option>
-                            </select>
+                        </select>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center create-catagory-btns">

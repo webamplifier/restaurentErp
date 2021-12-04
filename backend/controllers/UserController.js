@@ -32,7 +32,17 @@ router.list = async (req, res) => {
     let message = 'Oops something went wrong!';
     let users_list = [];
 
-    if (req.user_data.role == 2 || req.user_data.role == 1) {
+    if (req.user_data.role == 1){
+        await knex('users').then(response => {
+            if (response) {
+                status = 200;
+                message = 'users list has been fetched successfully!';
+                users_list = response;
+            }
+        }).catch(err => console.log(err))
+    }
+
+    if (req.user_data.role == 2) {
         await knex('users').where('role', '!=', 1).where("restaurent_id", req.user_data.restaurent_id).then(response => {
             if (response) {
                 status = 200;
@@ -40,7 +50,9 @@ router.list = async (req, res) => {
                 users_list = response;
             }
         }).catch(err => console.log(err))
-    } else {
+    }  
+    
+    if (req.user_data.role !=1 && req.user_data.role !=2){
         status = 300;
         message = "You are not authorized to perform this action"
     }
@@ -53,7 +65,7 @@ router.create = async (req, res) => {
     let message = 'Oops something went wrong!';
     let inputs = req.body;
 
-    if (req.user_data.role == 2 || req.user_data.role == 1) {
+    if (req.user_data.role == 1) {
         let create_obj = {
             uuid: await HELPERS.getKnexUuid(knex),
             name: inputs.name,
@@ -81,7 +93,36 @@ router.create = async (req, res) => {
             }
         })
     }
-    else {
+    if (req.user_data.role == 2) {
+        let create_obj = {
+            uuid: await HELPERS.getKnexUuid(knex),
+            name: inputs.name,
+            email: inputs.email,
+            password: MD5(inputs.password),
+            restaurent_id: req.user_data.restaurent_id,
+            restaurant_name: req.user_data.restaurant_name,
+            role: inputs.role,
+            created_by: req.user_data.id,
+            created_by_name: req.user_data.name,
+            created_at: await HELPERS.dateTime()
+        }
+
+        await knex('users').where('email', inputs.email).where("restaurent_id", req.user_data.restaurent_id).then(async response => {
+            if (response.length > 0) {
+                status = 400;
+                message = 'User with this email already exist'
+            } else {
+                await knex('users').where('restaurent_id', req.user_data.restaurent_id).insert(create_obj).then(response => {
+                    if (response) {
+                        status = 200;
+                        message = 'user has been created successfully!';
+                    }
+                }).catch(err => console.log(err))
+            }
+        })
+    }
+    
+    if (req.user_data.role !=1 && req.user_data.role != 2 ){
         status = 300;
         message = "You are not authorized to perform this action"
     }

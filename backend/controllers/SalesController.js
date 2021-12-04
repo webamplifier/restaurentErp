@@ -331,4 +331,40 @@ router.delete = async (req, res) => {
     return res.json({ status, message })
 }
 
+// this below function is used to print the reciept
+router.fetchSalesDetail = async (req,res) => {
+    let status = 500;
+    let message = "Oops something went wrong!";
+    let {id} = req.params;
+    let sale_header = {};
+    let sale_items = [];
+    let restaurent_detail = {};
+
+    await knex("sale_start").where("id", id).where('restaurent_id', req.user_data.restaurent_id).then(response => {
+        if (response.length > 0) {
+            sale_header = response[0];
+            status = 200;
+            message = "Sale record has been fetched successfully"
+        }
+    }).catch(err => console.log(err))
+
+    await knex("sale_items").where("sale_start_id", id).where('restaurent_id', req.user_data.restaurent_id).then(response => {
+        if (response.length > 0) {
+            sale_items = response;
+            status = 200;
+            message = "Purchase record has been fetched successfully"
+        }
+    }).catch(err => console.log(err))
+
+    await knex('restaurents').where('id',req.user_data.restaurent_id).then(response=>{
+        if (response.length > 0) {
+            restaurent_detail = response[0];
+            status = 200;
+            message = "Purchase record has been fetched successfully"
+        }
+    }).catch(err=>console.log(err))
+
+    return res.json({status,message,sale_header,sale_items,restaurent_detail})
+}
+
 module.exports = router;

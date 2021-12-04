@@ -152,4 +152,46 @@ router.update = async (req, res) => {
     return res.json({ status, message })
 }
 
+// this below function is used to delete the restaurent
+router.delete = async (req, res) => {
+    let status = 500;
+    let message = "Oops something went wrong!";
+    let { id } = req.params;
+
+    if (req.user_data.role == 1) {
+        await knex('restaurents').where('id', id).del().then(() => {
+            status = 200;
+            message = "Restaurent has been deleted successfully!"
+        }).catch(err => console.log(err))
+
+        await knex('products').where('restaurent_id', id).del().then(() => {
+            status = 200;
+            message = "Restaurent has been deleted successfully!"
+        }).catch(err => console.log(err))
+        await knex('sale_items').where('restaurent_id', id).del().then(() => {
+            status = 200;
+            message = "Restaurent has been deleted successfully!"
+        }).catch(err => console.log(err))
+        await knex('sale_start').where('restaurent_id', id).del().then(() => {
+            status = 200;
+            message = "Restaurent has been deleted successfully!"
+        }).catch(err => console.log(err))
+        await knex('users').where('restaurent_id', id).del().then(() => {
+            status = 200;
+            message = "Restaurent has been deleted successfully!"
+        }).catch(err => console.log(err))
+        await knex('expenses').where('restaurent_id', id).del().then(() => {
+            status = 200;
+            message = "Restaurent has been deleted successfully!"
+        }).catch(err => console.log(err))
+    }else{
+        status = 400;
+        message = "You don't have permission to perform this action"
+    }
+
+
+
+    return res.json({ status, message })
+}
+
 module.exports = router;

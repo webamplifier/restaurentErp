@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-function checkAuth(req, res, next) {
+async function checkAuth(req, res, next) {
     const auth_header = req.get('Authorization');
 
     if (!auth_header) {
@@ -26,7 +26,30 @@ function checkAuth(req, res, next) {
     }
 
     req.user_data = decode_token.user_data;
-    next();
+
+    if (req.user_data.role == 1){
+        next();
+    }
+
+    await knex('restaurents').where('id',req.user_data.restaurent_id).then(response=>{
+        if (response.length > 0){
+            let current_restro = response[0];
+            let expiry_date = new Date(current_restro.expiry_date);
+            let current_date = new Date();
+
+            let difference = expiry_date - current_date;
+
+            if (difference < 1){
+                return res.json({
+                    status : 500,
+                    message : "Renew Your subscription"
+                })
+            }else{
+                next();
+            }
+
+        }
+    })
 }
 
 const checkPermission = (value) => {

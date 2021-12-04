@@ -85,6 +85,8 @@ export default function Index() {
               'role':item.role,
             }
           }))
+        }else{
+          toast.error(data.message)
         }
       }
     }

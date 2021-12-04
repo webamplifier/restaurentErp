@@ -72,6 +72,8 @@ const UserList = React.lazy(()=>import('./screens/User/Index'));
 const CreateUser = React.lazy(()=>import('./screens/User/Create'));
 const EditUser = React.lazy(()=>import('./screens/User/Edit'));
 
+const SalePrintBill = React.lazy(()=>import('./screens/Reports/SalePrintBill'))
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
@@ -143,7 +145,7 @@ const routes = [
   {path : '/userList',exact : true,name : 'User List',component: UserList},
   {path : '/create/user',exact : true,name : 'Create User',component: CreateUser},
   {path : '/edit/user/:id',exact : true,name : 'Edit User',component:EditUser},
-  
+  {path : '/printBill/:id',exact : true,name : 'Edit User',component:SalePrintBill},
 ];
 
 

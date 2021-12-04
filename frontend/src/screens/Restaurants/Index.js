@@ -64,7 +64,7 @@ export default function Index() {
   const deleteEntry = () => {
     setLoad(true)
     async function deleteData() {
-      const response = await fetch(url + 'deleterestaurant/' + id, {
+      const response = await fetch(url + 'deleteRestaurent/' + id, {
         method: 'GET',
         headers: {
           'Authorization': user?.token

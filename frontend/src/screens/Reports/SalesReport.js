@@ -18,33 +18,33 @@ const getBadge = status => {
 }
 
 export default function SalesReport() {
-    const { user,setLoad } = React.useContext(userContext);
-    const fields = ['#', 'invoice_number', 'customer_name', 'sale_date', 'total_amount', 'payment_Method','action'];
+    const { user, setLoad } = React.useContext(userContext);
+    const fields = ['#', 'invoice_number', 'customer_name', 'sale_date', 'total_amount', 'payment_Method', 'action'];
     const [salesList, setSalesList] = React.useState([]);
     const [modal, setModal] = React.useState(false);
-    const [paymodal,setPayModal] = React.useState(false);
-    const [payAmount,setPayAmount] = React.useState('');
-    const [paymentMode,setPaymentMode] = React.useState('')
+    const [paymodal, setPayModal] = React.useState(false);
+    const [payAmount, setPayAmount] = React.useState('');
+    const [paymentMode, setPaymentMode] = React.useState('')
     const [id, setId] = React.useState('')
 
     const payBill = () => {
         setLoad(true)
-        async function payBillServer(){
+        async function payBillServer() {
             const formData = new FormData();
-            formData.append('pay_amount',payAmount);
-            formData.append('payment_mode',paymentMode);
-            const response = await fetch(url + 'pay/sales/' + id,{
-                method : 'POST',
-                headers : {
-                    'Authorization' : user.token
+            formData.append('pay_amount', payAmount);
+            formData.append('payment_mode', paymentMode);
+            const response = await fetch(url + 'pay/sales/' + id, {
+                method: 'POST',
+                headers: {
+                    'Authorization': user.token
                 },
-                body : formData
+                body: formData
             })
 
-            if (response.ok === true){
+            if (response.ok === true) {
                 const data = await response.json();
 
-                if (data.status === 200){
+                if (data.status === 200) {
                     setPayModal(false);
                     setId('');
                     async function fetchData() {
@@ -54,7 +54,7 @@ export default function SalesReport() {
                                 'Authorization': user?.token
                             }
                         })
-            
+
                         if (response.ok === true) {
                             const data = await response.json();
                             setLoad(false)
@@ -65,9 +65,9 @@ export default function SalesReport() {
                             }
                         }
                     }
-            
+
                     fetchData();
-                }else{
+                } else {
                     toast.error(data.message);
                 }
             }
@@ -75,7 +75,7 @@ export default function SalesReport() {
         payBillServer();
     }
 
-    const payModal = (item,id) => {
+    const payModal = (item, id) => {
         setPayAmount(parseFloat(item.total_after_roundoff) - parseFloat(item.amount_paid))
         setPayModal(true);
         setId(id);
@@ -92,7 +92,7 @@ export default function SalesReport() {
             })
 
             const data = await response.json();
-            
+
             if (data.status === 200) {
                 setModal(false);
                 setId('');
@@ -103,7 +103,7 @@ export default function SalesReport() {
                             'Authorization': user?.token
                         }
                     })
-        
+
                     if (response.ok === true) {
                         const data = await response.json();
                         setLoad(false)
@@ -114,7 +114,7 @@ export default function SalesReport() {
                         }
                     }
                 }
-        
+
                 fetchData();
             } else {
                 toast.error(data.message)
@@ -127,6 +127,8 @@ export default function SalesReport() {
         setId(value);
         setModal(true)
     }
+
+    
 
     React.useEffect(() => {
         setLoad(true)
@@ -156,7 +158,7 @@ export default function SalesReport() {
         <section>
             <ToastContainer />
             <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
-            <PayModal paymodal={paymodal} setPayModal={setPayModal} payAmount={payAmount} setPayAmount={setPayAmount} paymentMode={paymentMode} payBill={payBill} setPaymentMode={setPaymentMode}  />
+            <PayModal paymodal={paymodal} setPayModal={setPayModal} payAmount={payAmount} setPayAmount={setPayAmount} paymentMode={paymentMode} payBill={payBill} setPaymentMode={setPaymentMode} />
             <CCol xs="12" lg="12">
                 <CCard>
                     <CCardBody>
@@ -171,32 +173,32 @@ export default function SalesReport() {
                             sorter
                             pagination
                             scopedSlots={{
-                                '#' : (item,index) => (
+                                '#': (item, index) => (
                                     <td>
                                         {index + 1}
                                     </td>
                                 ),
-                                'invoice_number':(item) =>(
-                                     <td>
+                                'invoice_number': (item) => (
+                                    <td>
                                         {item.invoice_number}
                                     </td>
                                 ),
-                                'customer_name':(item) =>(
+                                'customer_name': (item) => (
                                     <td>
-                                     {item.customer_name}    
+                                        {item.customer_name}
                                     </td>
                                 ),
-                                'sale_date' : (item) => (
+                                'sale_date': (item) => (
                                     <td>
                                         {item.sale_date.split(' ')[0]}
                                     </td>
                                 ),
-                                'total_amount' : (item) => (
+                                'total_amount': (item) => (
                                     <td>
                                         {item.total_after_roundoff}
                                     </td>
                                 ),
-                                'payment_Method' : (item) => (
+                                'payment_Method': (item) => (
                                     <td>
                                         {item.payment_type}
                                     </td>
@@ -214,7 +216,7 @@ export default function SalesReport() {
                                     ),
                                 'action': (item) => (
                                     <td>
-                                        {item.status_id === 1 && <i style={{cursor:'pointer'}} onClick={()=>payModal(item,item.id)} class="fa fa-money" aria-hidden="true"></i>}
+                                        <Link to={`/printBill/${item.id}`}><i class="fa fa-print" aria-hidden="true"></i></Link>
                                         <Link to={`/edit/sales/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
                                         <i style={{ cursor: "pointer" }} onClick={() => showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i>
                                     </td>
