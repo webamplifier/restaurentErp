@@ -26,7 +26,7 @@ export default function App() {
   const {load} = React.useContext(userContext)
   return (
     <HashRouter>
-      {/* {load && <ManualLoader />} */}
+      {load && <ManualLoader />}
       <React.Suspense fallback={loading}>
         <Switch>
           <Route exact path="/login" name="Login Page" render={props => <Login {...props} />} />

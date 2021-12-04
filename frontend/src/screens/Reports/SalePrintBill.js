@@ -48,7 +48,7 @@ export default function SalePrintBill() {
             }
             
             .bill-main{
-                width: 330px;
+                width: 360px;
                 padding: 15px 15px;
             }
             
@@ -164,7 +164,7 @@ export default function SalePrintBill() {
             <div id="print_reciept">
                 <div class="bill-main">
                     <p class="bill-title">SALES INVOICE</p>
-                    <p class="bill-title text-uppercase FB">{restaurent?.name}</p>
+                    <p style={{fontSize:22}} class="bill-title text-uppercase FB">{restaurent?.name}</p>
                     <p class="bill-title address">{restaurent?.address}</p>
                     {restaurent?.food_licesnse_number && <p class="bill-title">FSSAI: {restaurent?.food_licesnse_number}</p>}
                     {restaurent?.gst_number && <p class="bill-title">GST: {restaurent?.gst_number}</p>}
