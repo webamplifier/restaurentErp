@@ -16,11 +16,6 @@ const _nav =  [
     _children: [
       {
         _tag: 'CSidebarNavItem',
-        name: 'Restaurant',
-        to: '/restaurantList',
-      },
-      {
-        _tag: 'CSidebarNavItem',
         name: 'Users',
         to: '/userList',
       },
@@ -65,11 +60,11 @@ const _nav =  [
         name: 'Expense Report',
         to: '/expenseReport',
       },
-      {
-        _tag: 'CSidebarNavItem',
-        name: 'Day Wise Sales',
-        to: '/DayWiseSales',
-      },
+      // {
+      //   _tag: 'CSidebarNavItem',
+      //   name: 'Day Wise Sales',
+      //   to: '/DayWiseSales',
+      // },
       {
         _tag: 'CSidebarNavItem',
         name: 'Day Wise Profit Report',

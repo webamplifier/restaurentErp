@@ -128,7 +128,7 @@ export default function SalesReport() {
         setModal(true)
     }
 
-    
+
 
     React.useEffect(() => {
         setLoad(true)
@@ -217,8 +217,8 @@ export default function SalesReport() {
                                 'action': (item) => (
                                     <td>
                                         <Link to={`/printBill/${item.id}`}><i class="fa fa-print" aria-hidden="true"></i></Link>
-                                        <Link to={`/edit/sales/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
-                                        <i style={{ cursor: "pointer" }} onClick={() => showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i>
+                                        {user?.role == 2 && (<><Link to={`/edit/sales/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
+                                            <i style={{ cursor: "pointer" }} onClick={() => showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i></>)}
                                     </td>
                                 )
 

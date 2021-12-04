@@ -10,7 +10,7 @@ export default function Create() {
     const history = useHistory();    
     const { user,setLoad } = React.useContext(userContext);
     const [invoiceNo, setInvoiceNo] = React.useState('');
-    const [saleDate, setSaleDate] = React.useState(currentDate(new Date().toLocaleDateString()));
+    const [saleDate, setSaleDate] = React.useState('');
     const [tax, setTax] = React.useState(0);
     const [customer, setCustomer] = React.useState('');
     const [mobile_number, setMobileNumber] = React.useState(' ');
@@ -282,7 +282,7 @@ export default function Create() {
                         </div> */}
                         <div class="form-group col-md-4">
                             <label for="date">Sale Date</label>
-                            <input value={saleDate} readOnly type="date" class="form-control" id="date" />
+                            <input value={saleDate} onChange={e=>setSaleDate(e.target.value)} readOnly type="date" class="form-control" id="date" />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="customer">Customer</label>

@@ -10,11 +10,11 @@ function getKnexUuid(knex) {
 }
 
 function dateTime(){
-    return moment().tz(process.env.TIME_ZONE).format('DD-MM-YYYY HH:mm:ss');
+    return moment().tz(process.env.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss');
 }
 
 function current_date(){
-    return moment().tz(process.env.TIME_ZONE).format('DD-MM-YYYY')
+    return moment().tz(process.env.TIME_ZONE).format('YYYY-MM-DD')
 }
 
 const tax_arr = [

@@ -5,9 +5,9 @@ import { url } from 'src/helpers/helpers';
 import { userContext } from '../../context/UserContext'
 
 export default function SalePrintBill() {
-    const [restaurent,setRestaurent] = React.useState({});
-    const [header,setHeader] = React.useState({});
-    const [item,setItem] = React.useState([]);
+    const [restaurent, setRestaurent] = React.useState({});
+    const [header, setHeader] = React.useState({});
+    const [item, setItem] = React.useState([]);
 
     const { id } = useParams();
     const { user } = React.useContext(userContext)
@@ -48,8 +48,16 @@ export default function SalePrintBill() {
             }
             
             .bill-main{
-                width: 350px;
+                width: 330px;
                 padding: 15px 15px;
+            }
+            
+            .text-uppercase{
+                text-transform: uppercase
+            }
+            
+            .FB{
+                font-weight: bold;
             }
             
             .DFlex{
@@ -63,9 +71,14 @@ export default function SalePrintBill() {
                 margin-bottom: 8px;
             }
             
+            .bill-title.address{
+                width: 260px;
+                margin: 0 auto;
+            }
+            
             .bill-main .bill-title{
                 text-align: center;
-                margin-bottom: 50px;
+                margin-bottom: 4px;
             }
             
             .AlignItemsEnd{
@@ -74,6 +87,10 @@ export default function SalePrintBill() {
             
             .upper-section-first-div{
                 flex-basis: 60%;
+            }
+            
+            .bill-upper-section{
+                margin: 12px 0;
             }
             
             .bill-mid-section{
@@ -91,12 +108,20 @@ export default function SalePrintBill() {
             }
             
             .table-head{
-                border: 1.6px dashed darkslategrey;
-                padding: 8px;
+                border: 1.6px solid darkslategrey;
+                padding: 0 8px;
+            }
+            
+            .table-head td p{
+                margin: 4px 0;
             }
             
             .bill-mid-section tr td:first-child{
-                width: 200px;
+                padding-left: 8px;
+            }
+            
+            .bill-mid-section tr td:nth-child(2){
+                width: 170px;
                 padding-left: 8px;
             }
             
@@ -111,8 +136,11 @@ export default function SalePrintBill() {
             .bill-lower-section .right-section{
                 flex-basis: 80%;
             }
-            </style>
-            `;
+            
+            .thanks{
+                text-align: center;
+                margin: 10px 0;
+            }</style>`;
 
         html = html + document.getElementById("print_reciept").innerHTML;
 
@@ -135,27 +163,29 @@ export default function SalePrintBill() {
             <button className="btn btn-primary" onClick={() => onPrint()}>Print</button>
             <div id="print_reciept">
                 <div class="bill-main">
-                    <p class="bill-title">{restaurent?.name}</p>
-                    <p style={{ margin: 0, padding: 0, textAlign: 'center' }}>
-                        {restaurent?.address}
-                    </p>
-                    <p style={{ margin: 0, padding: 0, textAlign: 'center' }}>
-                        Mobile : {restaurent?.mobile}
-                        {restaurent?.food_license_number && <span style={{textTransform : 'uppercase'}}>&nbsp; FSSAI : {restaurent?.food_license_number}</span>}
-                        {restaurent?.gst_number && <span style={{textTransform : 'uppercase'}}>&nbsp; GST  {restaurent?.gst_number}</span>}
-                        
-                    </p>
-
+                    <p class="bill-title">SALES INVOICE</p>
+                    <p class="bill-title text-uppercase FB">{restaurent?.name}</p>
+                    <p class="bill-title address">{restaurent?.address}</p>
+                    {restaurent?.food_licesnse_number && <p class="bill-title">FSSAI: {restaurent?.food_licesnse_number}</p>}
+                    {restaurent?.gst_number && <p class="bill-title">GST: {restaurent?.gst_number}</p>}
+                    <p class="bill-title">Mobile: {restaurent?.mobile}</p>
+                    <hr />
 
                     <div class="bill-upper-section">
-                        <div class="DFlex AlignItemsEnd">
+                        <div class="DFlex">
                             <div class="upper-section-first-div">
                                 <div class="DFlex">
-                                    <p>invoice number:&nbsp;&nbsp;</p>
-                                    <p>{header?.invoice_number}</p>
+                                    <p>Customer: &nbsp; &nbsp; </p>
+                                    <p>{header?.customer_name}</p>
                                 </div>
                                 <div class="DFlex">
-                                    <p>Date:&nbsp;&nbsp;</p>
+                                    <p>Bill No: &nbsp; &nbsp; </p>
+                                    <p>{header?.invoice_number}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="DFlex">
+                                    <p>Date: &nbsp; &nbsp; </p>
                                     <p>{header?.sale_date}</p>
                                 </div>
                             </div>
@@ -166,22 +196,23 @@ export default function SalePrintBill() {
                         <table>
                             <thead>
                                 <tr class="table-head">
+                                    <td><p>#</p></td>
                                     <td><p>Product</p></td>
-                                    <td><p style={{ textAlign: 'left' }}>price</p></td>
-                                    <td><p class="textRight">qty</p></td>
-                                    <td><p class="textRight">total</p></td>
+                                    <td><p class="textRight">QTY</p></td>
+                                    <td><p class="textRight">Rate</p></td>
+                                    <td><p class="textRight">Total</p></td>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                {item?.map((item, index) => (
+                                {item.map((item, index) => (
                                     <tr>
+                                        <td><p>{index + 1}</p></td>
                                         <td><p>{item.product_name}</p></td>
-                                        <td><p style={{ textAlign: 'left' }}>{item.mrp}</p></td>
                                         <td><p class="textRight">{item.qty}</p></td>
+                                        <td><p class="textRight">{item.mrp}</p></td>
                                         <td><p class="textRight">{item.total}</p></td>
                                     </tr>
-
                                 ))}
 
                             </tbody>
@@ -190,22 +221,24 @@ export default function SalePrintBill() {
 
                     <div class="bill-lower-section">
                         <div class="DFlex">
-                            <p class="right-section">Order Value</p>
+                            <p class="right-section FB">Order Value</p>
                             <p>{header?.total_supply}</p>
                         </div>
-                        <div class="DFlex">
+                        {header?.bill_discount_percentage && <div class="DFlex">
                             <p class="right-section">discount(%)</p>
                             <p>{header?.bill_discount_percentage}</p>
-                        </div>
+                        </div>}
                         {header?.taxable_amount && <div class="DFlex">
                             <p class="right-section">total tax</p>
                             <p>{header?.taxable_amount}</p>
                         </div>}
                         <div class="DFlex">
-                            <p class="right-section">Total Amount</p>
+                            <p class="right-section">Grand Total</p>
                             <p>{header?.total_after_roundoff}</p>
                         </div>
                     </div>
+                    <hr />
+                    <h2 class="thanks">THANKS FOR VISITING</h2>
 
                 </div>
             </div>

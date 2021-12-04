@@ -7,6 +7,8 @@ const SalesController = require("../controllers/SalesController")
 const RestaurentController = require("../controllers/RestaurentController");
 const ExpenseController= require("../controllers/ExpenseController");
 
+const ProfitController = require("../controllers/ProfitController")
+
 const router = express.Router();
 
 // user related routes
@@ -45,5 +47,9 @@ router.get('/detail/sales/:id',Middlewares.checkAuth,SalesController.fetchById)
 router.post('/edit/sales/:id',Middlewares.checkAuth,SalesController.update)
 router.get('/delete/sales/:id',Middlewares.checkAuth,SalesController.delete)
 router.get('/fetchSalesDetail/:id',Middlewares.checkAuth,SalesController.fetchSalesDetail)
+
+// profit routes
+router.get('/get-total-profile-record',Middlewares.checkAuth,ProfitController.getProfitAmountReport)
+router.post('/get-profit-data',Middlewares.checkAuth,ProfitController.filterDateProfit)
 
 module.exports = router;

@@ -44,7 +44,7 @@ router.create = async (req, res) => {
             uuid: await HELPERS.getKnexUuid(knex),
             restaurent_id: req.user_data.restaurent_id,
             invoice_number: invoice_number + 1,
-            sale_date: header?.saleDate ? header?.saleDate : await HELPERS.dateTime(),
+            sale_date: header?.saleDate ? header?.saleDate : await HELPERS.current_date(),
             customer_name: header.customer,
             customer_mobile: header.mobile_number,
             total_supply: final.totalValue,
@@ -78,7 +78,7 @@ router.create = async (req, res) => {
                 let item_id = 0;
 
                 await knex("products").where("id", data.item.value).where('restaurent_id', req.user_data.restaurent_id).then(async responseProduct => {
-                    if (responseProduct) {
+                    if (responseProduct.length > 0) {
                         let item_obj = {
                             uuid: await HELPERS.getKnexUuid(knex),
                             restaurent_id: req.user_data.restaurent_id,
@@ -107,7 +107,18 @@ router.create = async (req, res) => {
                                 message = "Sale has been created successfully!"
                             }
                         }).catch(err => console.log(err))
+
+                        if (responseProduct[0].stock_quantity) {
+                            await knex('products').where('id', data.item.value).update({
+                                stock_quantity: (parseInt(responseProduct[0].stock_quantity) - parseInt(data.qty)).toString()
+                            }).then(response => {
+                                status = 200;
+                                message = "Quantity updated successfully"
+                            }).catch(err => console.log(err))
+                        }
                     }
+
+
                 })
 
             }
@@ -332,10 +343,10 @@ router.delete = async (req, res) => {
 }
 
 // this below function is used to print the reciept
-router.fetchSalesDetail = async (req,res) => {
+router.fetchSalesDetail = async (req, res) => {
     let status = 500;
     let message = "Oops something went wrong!";
-    let {id} = req.params;
+    let { id } = req.params;
     let sale_header = {};
     let sale_items = [];
     let restaurent_detail = {};
@@ -356,15 +367,15 @@ router.fetchSalesDetail = async (req,res) => {
         }
     }).catch(err => console.log(err))
 
-    await knex('restaurents').where('id',req.user_data.restaurent_id).then(response=>{
+    await knex('restaurents').where('id', req.user_data.restaurent_id).then(response => {
         if (response.length > 0) {
             restaurent_detail = response[0];
             status = 200;
             message = "Purchase record has been fetched successfully"
         }
-    }).catch(err=>console.log(err))
+    }).catch(err => console.log(err))
 
-    return res.json({status,message,sale_header,sale_items,restaurent_detail})
+    return res.json({ status, message, sale_header, sale_items, restaurent_detail })
 }
 
 module.exports = router;

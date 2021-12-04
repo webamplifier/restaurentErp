@@ -21,11 +21,11 @@ export default function Index() {
   const [id, setId] = React.useState(null);
   const [password, setPassword] = React.useState('');
   const [modal, setModal] = React.useState(false)
-  const { user,setLoad } = React.useContext(userContext);
-  const fields = ['#', 'restaurant_name','name', 'email', 'role','action'];
+  const { user, setLoad } = React.useContext(userContext);
+  const fields = ['#', 'restaurant_name', 'name', 'email', 'role', 'action'];
   const [userList, setUserList] = React.useState([]);
   const [showEditModal, setShowEditModal] = React.useState(false);
-  
+
   const showModalFunc = (id) => {
     setId(id);
     setShowEditModal(true);
@@ -34,31 +34,31 @@ export default function Index() {
   const submitAdjust = () => {
     setLoad(true)
     const formData = new FormData();
-    formData.append('password',password);
-    async function editData(){
-        const respone = await fetch(url + 'editPassword/' + id,{
-            method : 'POST',
-            headers : {
-                'Authorization' : user.token,
-            },
-            body : formData
-        })
+    formData.append('password', password);
+    async function editData() {
+      const respone = await fetch(url + 'editPassword/' + id, {
+        method: 'POST',
+        headers: {
+          'Authorization': user.token,
+        },
+        body: formData
+      })
 
-        if (respone.ok === true){
-            const data = await respone.json();
-            setLoad(false)
-            console.log(data);
-            if (data.status === 200){
-                setShowEditModal(false);
-                setPassword('');   
-            }
-            else{
-                toast.error(data.message)
-            }
+      if (respone.ok === true) {
+        const data = await respone.json();
+        setLoad(false)
+        console.log(data);
+        if (data.status === 200) {
+          setShowEditModal(false);
+          setPassword('');
         }
+        else {
+          toast.error(data.message)
+        }
+      }
     }
     editData();
-}
+  }
 
   React.useEffect(() => {
     setLoad(true)
@@ -82,10 +82,10 @@ export default function Index() {
               'id': item.id,
               'name': item.name,
               'email': item.email,
-              'role':item.role,
+              'role': item.role,
             }
           }))
-        }else{
+        } else {
           toast.error(data.message)
         }
       }
@@ -116,7 +116,7 @@ export default function Index() {
               'Authorization': user?.token
             }
           })
-    
+
           if (response.ok === true) {
             const data = await response.json();
             setLoad(false)
@@ -177,14 +177,15 @@ export default function Index() {
                     </td>
                   ),
                 'role':
-                (item) =>
+                  (item) =>
                   (<td>{(item.role === 2) ? "Restaurant_admin" : "Staff"}</td>
                   ),
                 'action': (item) => (
                   <td>
-                    <Link to={`/edit/user/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
-                    <i style={{cursor:'pointer'}} onClick={()=>showModalFunc(item.id)} class="fa fa-user" aria-hidden="true"></i>
-                    <i style={{cursor:"pointer"}} onClick={()=>showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i>
+                    {user?.role == 2 && <>
+                      <Link to={`/edit/user/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
+                      <i style={{ cursor: 'pointer' }} onClick={() => showModalFunc(item.id)} class="fa fa-user" aria-hidden="true"></i>
+                      <i style={{ cursor: "pointer" }} onClick={() => showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i></>}
                   </td>
                 )
 
