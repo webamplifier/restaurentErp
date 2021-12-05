@@ -70,7 +70,9 @@ router.create = async (req, res) => {
                     gst_number: inputs.GST,
                     address: inputs.address,
                     expiry_date: inputs.expiry_date,
-                    reminder_date: inputs.reminder_date
+                    reminder_date: inputs.reminder_date,
+                    First_amount : inputs.firstAmount,
+                    renew_amount : inputs.renewAmount
                 }
 
                 await knex("restaurents").insert(create_obj).then(response => {
@@ -107,7 +109,9 @@ router.update = async (req, res) => {
                     gst_number: inputs.GST,
                     address: inputs.address,
                     expiry_date: inputs.expiry_date,
-                    reminder_date: inputs.reminder_date
+                    reminder_date: inputs.reminder_date,
+                    First_amount : inputs.firstAmount,
+                    renew_amount : inputs.renewAmount
                 }
 
                 await knex('restaurents').where('id', id).update(update_obj).then(response1 => {

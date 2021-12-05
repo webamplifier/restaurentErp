@@ -1,7 +1,7 @@
 import React from 'react'
 import plus from '../../../assets/images_manual/add.svg'
 import Select from 'react-select';
-import { url,currentDate, formatDateTime} from 'src/helpers/helpers';
+import { url, currentDate, formatDateTime } from 'src/helpers/helpers';
 import { userContext } from '../../../context/UserContext'
 import { toast, ToastContainer } from 'react-toastify';
 import { useHistory, useParams } from 'react-router-dom'
@@ -9,8 +9,8 @@ import { useHistory, useParams } from 'react-router-dom'
 export default function Edit() {
     let { id } = useParams();
     const history = useHistory();
-    
-    const { user,setLoad } = React.useContext(userContext);
+
+    const { user, setLoad } = React.useContext(userContext);
     const [invoiceNo, setInvoiceNo] = React.useState('');
     const [saleDate, setSaleDate] = React.useState('');
     const [tax, setTax] = React.useState(0);
@@ -23,7 +23,9 @@ export default function Edit() {
     const [itemDescription, setItemDescription] = React.useState('');
     const [remarks, setRemarks] = React.useState('');
 
-    const [taxList,setTaxList] = React.useState([])
+    const [pending, setPending] = React.useState(true)
+
+    const [taxList, setTaxList] = React.useState([])
 
     const [allProducts, setAllProducts] = React.useState([]);
     const [allItems, setAllItems] = React.useState([]);
@@ -53,7 +55,7 @@ export default function Edit() {
         setLoad(true)
         // products grab
         async function fetchProd() {
-            
+
             const response = await fetch(url + 'productlist', {
                 method: 'GET',
                 headers: {
@@ -66,11 +68,11 @@ export default function Edit() {
                 setLoad(false)
                 if (data.status === 200) {
                     setTaxList(data?.tax_list)
-                    setAllProducts(data?.product_list?.map(item=>{
+                    setAllProducts(data?.product_list?.map(item => {
                         return {
-                            value : item.id,
-                            label : item.name,
-                            mrp : item.price
+                            value: item.id,
+                            label: item.name,
+                            mrp: item.price
                         }
                     }))
                 } else {
@@ -92,7 +94,7 @@ export default function Edit() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
-                    
+
                     console.log(data);
                     let header = data.sale_header;
                     let final_discount_criteria;
@@ -106,6 +108,7 @@ export default function Edit() {
                     }
                     let items = data.sale_items;
                     setInvoiceNo(header.invoice_number);
+                    setPending(header.status == 1 ? false : true)
                     setSaleDate(formatDateTime(header.sale_date));
                     setTaxAmount(header.taxable_amount);
                     setCustomer(header.customer_name);
@@ -114,7 +117,7 @@ export default function Edit() {
                     let midItems = [];
                     for (let i = 0; i < items.length; i++) {
                         let current_item = items[i];
-                        
+
                         let obj = {
                             item: {
                                 value: current_item.product_id,
@@ -155,9 +158,9 @@ export default function Edit() {
 
 
     const calculateTotal = () => {
-        if (mrp > 0 && qty > 0 ) {
+        if (mrp > 0 && qty > 0) {
             amount_item = parseFloat(mrp) * parseFloat(qty); //amount before tax
-            tax_amount = (parseFloat(amount_item)/100) * parseFloat(tax)
+            tax_amount = (parseFloat(amount_item) / 100) * parseFloat(tax)
             perItemAmount = amount_item + tax_amount
         }
     }
@@ -166,18 +169,18 @@ export default function Edit() {
 
     const calculateFinalPrice = () => {
         if (totalValue > 0) {
-                if (finalDiscountCriteria === 'percent') {
-                    discount_amount_final = totalValue / 100 * parseFloat(finalDiscountValue);
-                    amount_before_discount_final = totalValue;
-                    amount_after_discount_final = totalValue - discount_amount_final;
-                }
+            if (finalDiscountCriteria === 'percent') {
+                discount_amount_final = totalValue / 100 * parseFloat(finalDiscountValue);
+                amount_before_discount_final = totalValue;
+                amount_after_discount_final = totalValue - discount_amount_final;
+            }
 
-                if (finalDiscountCriteria === 'amount') {
-                    discount_amount_final = parseFloat(finalDiscountValue);
-                    amount_before_discount_final = totalValue;
-                    amount_after_discount_final = totalValue - discount_amount_final;
-                }
-                finalAmount = amount_after_discount_final;
+            if (finalDiscountCriteria === 'amount') {
+                discount_amount_final = parseFloat(finalDiscountValue);
+                amount_before_discount_final = totalValue;
+                amount_after_discount_final = totalValue - discount_amount_final;
+            }
+            finalAmount = amount_after_discount_final;
         }
     }
 
@@ -246,7 +249,7 @@ export default function Edit() {
     }
 
     const finalSubmit = () => {
-        if ( allItems.length > 0 && totalValue) {
+        if (allItems.length > 0 && totalValue) {
             setLoad(true)
             let header = {
                 invoiceNo: invoiceNo,
@@ -254,6 +257,7 @@ export default function Edit() {
                 customer: customer,
                 mobile_number: mobile_number,
                 discountType: discountType,
+                pending: pending
             }
             let final = {
                 totalValue: totalValue,
@@ -332,7 +336,7 @@ export default function Edit() {
         setTotalValue(total);
         setAllItems(new_item);
     }
-    function setCurrentProductFunc(value){
+    function setCurrentProductFunc(value) {
         setCurrentProduct(value);
         setMrp(value.mrp)
     }
@@ -349,7 +353,7 @@ export default function Edit() {
                         </div> */}
                         <div class="form-group col-md-4">
                             <label for="date">Sale Date</label>
-                            <input value={saleDate} onChange={e=>setSaleDate(e.target.value)} readOnly type="date" class="form-control" id="date" />
+                            <input value={saleDate} onChange={e => setSaleDate(e.target.value)} readOnly type="date" class="form-control" id="date" />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="customer">Customer</label>
@@ -358,6 +362,10 @@ export default function Edit() {
                         <div class="form-group col-md-3">
                             <label for="customermobile">Mobile Number:</label>
                             <input value={mobile_number} onChange={e => setMobileNumber(e.target.value)} type="text" class="form-control" id="customermobile" />
+                        </div>
+                        <div class="form-group d-flex align-items-center col-md-3">
+                            <label htmlFor="pending">Pending:</label>
+                            <input id="pending" checked={pending} onChange={e => setPending(!pending)} type="checkbox" />
                         </div>
                     </div>
 
@@ -381,7 +389,7 @@ export default function Edit() {
                         <div class="form-group col-md-4">
                             <label for="tax">Tax:</label>
                             <select id="tax" value={tax} onChange={e => setTax(e.target.value)} class="form-control" required>
-                                {taxList?.map((item,index)=>(
+                                {taxList?.map((item, index) => (
                                     <option value={item.value} key={index}>{item.label}</option>
                                 ))}
                             </select>
@@ -426,8 +434,10 @@ export default function Edit() {
                                             <td>{item.tax}</td>
                                             <td>{item.total}</td>
                                             <td>
-                                                <i style={{ cursor: 'pointer' }} onClick={() => handleEdit(item, index+1)} class="fa fa-pencil" aria-hidden="true"></i>
-                                                <i onClick={() => handleDelete(index)} style={{ cursor: "pointer" }} class="fa fa-trash" aria-hidden="true"></i>
+                                                {user?.role == 2 && (<>
+                                                    <i style={{ cursor: 'pointer' }} onClick={() => handleEdit(item, index + 1)} class="fa fa-pencil" aria-hidden="true"></i>
+                                                    <i onClick={() => handleDelete(index)} style={{ cursor: "pointer" }} class="fa fa-trash" aria-hidden="true"></i>
+                                                </>)}
                                             </td>
                                         </tr>
                                     )
@@ -438,7 +448,7 @@ export default function Edit() {
                     <div>
                         <div>
                             Taxable amount:- {taxableAmount && taxableAmount}
-                        </div> 
+                        </div>
                     </div>
                     <div className='row mt-5 justify-content-between purchase-create-footer'>
                         <div class="form-group col-md-5">
@@ -487,12 +497,12 @@ export default function Edit() {
                         </div>
                     </div>
                 </div>
-                 <div class="d-flex justify-content-center create-catagory-btns">
+                <div class="d-flex justify-content-center create-catagory-btns">
                     <button type="button" onClick={() => window.location.reload()} class="font-weight-bold m-3 py-2 px-4 btn btn-danger">Cancel<i
                         class="px-2 fa fa-times" aria-hidden="true"></i></button>
                     <button type="button" onClick={() => finalSubmit()} class="font-weight-bold m-3 py-2 px-4 btn btn-success">Save<i
                         class="px-2 fa fa-floppy-o" aria-hidden="true"></i></button>
-                </div> 
+                </div>
             </form>
         </div>
     )

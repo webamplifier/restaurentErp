@@ -21,6 +21,9 @@ export default function Create() {
     const [itemDescription, setItemDescription] = React.useState('');
     const [remarks, setRemarks] = React.useState('');
 
+
+    const [pending,setPending] = React.useState(false)
+
     const [taxList,setTaxList] = React.useState([])
 
     const [allProducts, setAllProducts] = React.useState([]);
@@ -180,6 +183,7 @@ export default function Create() {
                 customer : customer,
                 mobile_number: mobile_number,
                 discountType: discountType,
+                pending : pending
             }
             let final = {
                 totalValue : totalValue,
@@ -291,6 +295,10 @@ export default function Create() {
                         <div class="form-group col-md-3">
                             <label for="customermobile">Mobile Number:</label>
                             <input value={mobile_number} onChange={e => setMobileNumber(e.target.value)} type="text" class="form-control" id="customermobile" />
+                        </div>
+                        <div class="form-group d-flex align-items-center col-md-3">
+                            <label htmlFor="pending">Pending:</label>
+                            <input id="pending" value={pending} onChange={e => setPending(!pending)} type="checkbox" />
                         </div>
                     </div>
 

@@ -42,6 +42,7 @@ router.get('/deleteproduct/:id',Middlewares.checkAuth,ProductController.delete);
 
 // sales related routes
 router.get('/salesList',Middlewares.checkAuth,SalesController.list)
+router.get('/salesListPending',Middlewares.checkAuth,SalesController.listPending)
 router.post('/create/sales',Middlewares.checkAuth,SalesController.create);
 router.get('/detail/sales/:id',Middlewares.checkAuth,SalesController.fetchById)
 router.post('/edit/sales/:id',Middlewares.checkAuth,SalesController.update)

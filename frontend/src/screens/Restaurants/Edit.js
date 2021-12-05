@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 
 export default function Edit() {
     const { id } = useParams();
-    const { user,setLoad } = React.useContext(userContext);
+    const { user, setLoad } = React.useContext(userContext);
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [mobile, setMobile] = React.useState('');
@@ -15,44 +15,47 @@ export default function Edit() {
     const [gst_number, setGSTNumber] = React.useState('');
     const [expiry_date, setExpiryDate] = React.useState('');
     const [reminder_date, setReminderDate] = React.useState('');
-    
+    const [firstAmount,setFirstAmount] = React.useState('')
+    const [renewAmount,setRenewAmount] = React.useState('')
     const handleSubmit = e => {
         setLoad(true)
         e.preventDefault();
 
         async function submitData() {
-            if(name && email && mobile && expiry_date && reminder_date){
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('email', email);
-            formData.append('mobile', mobile);
-            formData.append('food_license_number', food_license_number);
-            formData.append('GST', gst_number);
-            formData.append('address', address);
-            formData.append('expiry_date',expiry_date);
-            formData.append('reminder_date',reminder_date);
+            if (name && email && mobile && expiry_date && reminder_date) {
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('email', email);
+                formData.append('mobile', mobile);
+                formData.append('food_license_number', food_license_number);
+                formData.append('GST', gst_number);
+                formData.append('address', address);
+                formData.append('expiry_date', expiry_date);
+                formData.append('reminder_date', reminder_date);
+                formData.append("firstAmount", firstAmount)
+                formData.append("renewAmount", renewAmount)
 
-            const response = await fetch(url + 'updaterestaurant/' + id, {
-                method: 'POST',
-                headers: {
-                    'Authorization': user?.token
-                },
-                body: formData
-            })
+                const response = await fetch(url + 'updaterestaurant/' + id, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': user?.token
+                    },
+                    body: formData
+                })
 
-            if (response.ok === true) {
-                const data = await response.json();
-                setLoad(false)
-                if (data.status === 200) {
-                    return window.location = window.location.origin + '/#/restaurantlist'
-                } else {
-                    toast.error(data.message)
+                if (response.ok === true) {
+                    const data = await response.json();
+                    setLoad(false)
+                    if (data.status === 200) {
+                        return window.location = window.location.origin + '/#/restaurantlist'
+                    } else {
+                        toast.error(data.message)
+                    }
                 }
             }
-        }
-        else{
-            toast.error("Please fill the details with *");
-        }
+            else {
+                toast.error("Please fill the details with *");
+            }
         }
         submitData();
 
@@ -72,6 +75,8 @@ export default function Edit() {
                 const data = await response.json();
                 setLoad(false)
                 const restaurant_detail = data.restaurant_detail;
+                setFirstAmount(restaurant_detail?.First_amount)
+                setRenewAmount(restaurant_detail?.renew_amount)
                 console.log(restaurant_detail);
                 setName(restaurant_detail.name);
                 setEmail(restaurant_detail.email);
@@ -90,7 +95,7 @@ export default function Edit() {
         <div className="container create-page-main-section">
             <ToastContainer />
             <form onSubmit={e => handleSubmit(e)}>
-            <div className='p-sm-5 create-form-field'>
+                <div className='p-sm-5 create-form-field'>
                     <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Restaurant Name:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
@@ -110,6 +115,18 @@ export default function Edit() {
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">First Amount:<span className='required-label'>*</span></label>
+                        <div class="d-flex align-items-sm-center col-sm-10">
+                            <input value={firstAmount} onChange={e => setFirstAmount(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Renew Amount:<span className='required-label'>*</span></label>
+                        <div class="d-flex align-items-sm-center col-sm-10">
+                            <input value={renewAmount} onChange={e => setRenewAmount(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label for="inputPassword" class="col-sm-2 col-form-label">Food License No:</label>
                         <div class="d-flex align-items-sm-center col-sm-10">
                             <input value={food_license_number} onChange={e => setFoodLicenseNumber(e.target.value)} type="text" class="form-control" id="inputPassword" />
@@ -124,13 +141,13 @@ export default function Edit() {
                     <div class="form-group row">
                         <label for="date" class="col-md-4 col-form-label">Expiry Date<span className='required-label'>*</span></label>
                         <div class="col-md-8">
-                            <input type="date" value={expiry_date} onChange= {e=> setExpiryDate(e.target.value)} class="form-control" id="date" required/>
+                            <input type="date" value={expiry_date} onChange={e => setExpiryDate(e.target.value)} class="form-control" id="date" required />
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="date" class="col-md-4 col-form-label">Reminder Date<span className='required-label'>*</span></label>
                         <div class="col-md-8">
-                            <input type="date" value={reminder_date} onChange= {e=> setReminderDate(e.target.value)} class="form-control" id="date" required/>
+                            <input type="date" value={reminder_date} onChange={e => setReminderDate(e.target.value)} class="form-control" id="date" required />
                         </div>
                     </div>
                     <div class="form-group row">

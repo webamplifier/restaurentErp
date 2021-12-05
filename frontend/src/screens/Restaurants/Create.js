@@ -13,7 +13,10 @@ export default function Create() {
     const [gst_number, setGSTNumber] = React.useState('');
     const [expiry_date, setExpiryDate] = React.useState('');
     const [reminder_date, setReminderDate] = React.useState('');
+    const [firstAmount,setFirstAmount] = React.useState('')
+    const [renewAmount,setRenewAmount] = React.useState('')
     
+
     const handleSubmit = e => {
         setLoad(true)
         e.preventDefault();
@@ -30,6 +33,8 @@ export default function Create() {
                 formData.append('address', address);
                 formData.append('expiry_date',expiry_date);
                 formData.append('reminder_date',reminder_date);
+                formData.append("firstAmount",firstAmount)
+                formData.append("renewAmount",renewAmount)
 
                 const response = await fetch(url + 'createRestaurant', {
                     method: 'POST',
@@ -53,6 +58,8 @@ export default function Create() {
                         setGSTNumber('');
                         setExpiryDate('');
                         setReminderDate('');
+                        setFirstAmount("");
+                        setRenewAmount("")
                     } else {
                         toast.error(data.message)
                     }
@@ -87,6 +94,18 @@ export default function Create() {
                         <label for="inputPassword" class="col-sm-2 col-form-label">Mobile No:<span className='required-label'>*</span></label>
                         <div class="d-flex align-items-sm-center col-sm-10">
                             <input required value={mobile} onChange={e => setMobile(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">First Amount:<span className='required-label'>*</span></label>
+                        <div class="d-flex align-items-sm-center col-sm-10">
+                            <input value={firstAmount} onChange={e => setFirstAmount(e.target.value)} type="text" class="form-control" id="inputPassword" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Renew Amount:<span className='required-label'>*</span></label>
+                        <div class="d-flex align-items-sm-center col-sm-10">
+                            <input value={renewAmount} onChange={e => setRenewAmount(e.target.value)} type="text" class="form-control" id="inputPassword" />
                         </div>
                     </div>
                     <div class="form-group row">
