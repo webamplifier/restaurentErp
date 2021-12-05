@@ -44,7 +44,7 @@ router.create = async (req, res) => {
             uuid: await HELPERS.getKnexUuid(knex),
             restaurent_id: req.user_data.restaurent_id,
             invoice_number: invoice_number + 1,
-            sale_date: header?.saleDate ? header?.saleDate : await HELPERS.current_date(),
+            sale_date: header.saleDate ? header.saleDate : await HELPERS.current_date(),
             customer_name: header.customer,
             customer_mobile: header.mobile_number,
             total_supply: final.totalValue,
