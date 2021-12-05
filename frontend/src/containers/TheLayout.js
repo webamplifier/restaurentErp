@@ -8,21 +8,10 @@ import {
 import { userContext } from '../context/UserContext'
 
 const TheLayout = () => {
-  const { user } = React.useContext(userContext)
-  if (!user) {
-    // window.location = window.location.origin + '/#/login'
-    return (
-      <div className="c-app c-default-layout">
-        <TheSidebar />
-        <div className="c-wrapper">
-          <TheHeader />
-          <div className="c-body">
-            <TheContent />
-          </div>
-          <TheFooter />
-        </div>
-      </div>
-    )
+  
+  if (localStorage.getItem("users") == "null") {
+    window.location = window.location.origin + '/#/login'
+    
   } else {
     return (
       <div className="c-app c-default-layout">

@@ -1,1 +1,0 @@
-{"version":3,"sources":["screens/companies/EditCompany.js"],"names":["EditCompany"],"mappings":"6KACA,gEAEe,SAASA,IACpB,OACI","file":"static/js/85.9eb4c2f7.chunk.js","sourcesContent":["\r\nimport React from 'react';\r\n\r\nexport default function EditCompany(){\r\n    return(\r\n        <div>\r\n\r\n        </div>\r\n    )\r\n}"],"sourceRoot":""}
