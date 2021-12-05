@@ -1,5 +1,5 @@
-export const node_url = 'http://localhost:3005/'
-// export const node_url = 'https://restaurantbackend.web-amplifier.com/'
+// export const node_url = 'http://localhost:3005/'
+export const node_url = 'https://restaurantbackend.web-amplifier.com/'
 
 export const url = node_url + 'api/';
 export const GST = ['0%', '8%', '12%', '18%'];
