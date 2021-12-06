@@ -174,6 +174,8 @@ router.fetchById = async (req, res) => {
         }
     }).catch(err => console.log(err))
 
+    console.log(status,message,sale_header,sale_items)
+
     return res.json({ status, message, sale_header, sale_items })
 }
 
@@ -219,10 +221,8 @@ router.update = async (req, res) => {
         status: header.pending == true ? 2 : 1,
     };
 
-    await knex("sale_items").where("sale_start_id", sale_start_id).where('restaurent_id', req.user_data.restaurent_id).then(response => {
-        for (let i = 0; i < response.length; i++) {
-            past_items_id.push(response[i].id)
-        }
+    await knex("sale_items").where("sale_start_id", sale_start_id).where('restaurent_id', req.user_data.restaurent_id).del().then(response => {
+        // 
     }).catch(err => console.log(err))
 
     await knex("sale_start").where("id", id).where('restaurent_id', req.user_data.restaurent_id).update(update).then(response => {
@@ -233,87 +233,52 @@ router.update = async (req, res) => {
     if (sale_start_id) {
         for (let i = 0; i < items.length; i++) {
             let data = items[i];
+            let item_id = 0;
 
-            if (data.item_id) {
+            await knex("products").where("id", data.item.value).where('restaurent_id', req.user_data.restaurent_id).then(async responseProduct => {
+                if (responseProduct.length > 0) {
+                    let item_obj = {
+                        uuid: await HELPERS.getKnexUuid(knex),
+                        restaurent_id: req.user_data.restaurent_id,
+                        sale_start_id: sale_start_id,
+                        product_id: data.item.value,
+                        product_name: data.item.label,
+                        description: data.description,
+                        qty: data.qty,
+                        mrp: data.mrp,
+                        free_qty: 0, //their is no any option for free in this project
+                        amount_before_tax: data.amount_item,
+                        tax_percent: data.tax,
+                        amount_after_tax: data.total,
+                        tax_amount: data.tax_amount,
+                        amount_before_discount: 0, //their is no discount option for items in project
+                        discount_percent: 0, //their is no discount option for items in project
+                        amount_after_discount: 0, //their is no discount option for items in project
+                        discount_amount: 0, //their is no discount option for items in project
+                        total: data.total
+                    }
 
-                // this condition if item already exists
+                    await knex("sale_items").where('restaurent_id', req.user_data.restaurent_id).insert(item_obj, "id").then(response => {
+                        if (response[0]) {
+                            item_id = response[0];
+                            status = 200;
+                            message = "Sale has been created successfully!"
+                        }
+                    }).catch(err => console.log(err))
 
-                for (let j = 0; j < past_items_id.length; j++) {
-                    if (data.item_id == past_items_id[j]) {
-                        // 
-                    } else {
-                        new_items_id.push(past_items_id[j])
+                    if (responseProduct[0].stock_quantity) {
+                        await knex('products').where('id', data.item.value).update({
+                            stock_quantity: (parseInt(responseProduct[0].stock_quantity) - parseInt(data.qty)).toString()
+                        }).then(response => {
+                            status = 200;
+                            message = "Quantity updated successfully"
+                        }).catch(err => console.log(err))
                     }
                 }
 
-                let item_obj = {
-                    product_id: data.item.value,
-                    product_name: data.item.label,
-                    description: data.description,
-                    qty: data.qty,
-                    mrp: data.mrp,
-                    free_qty: 0, //their is no any option for free in this project
-                    amount_before_tax: data.amount_item,
-                    tax_percent: data.tax,
-                    amount_after_tax: data.total,
-                    tax_amount: data.tax_amount,
-                    amount_before_discount: 0,//their is no any option for discount for items in this project
-                    discount_percent: 0,//their is no any option for discount for items in this project
-                    amount_after_discount: 0,//their is no any option for discount for items in this project
-                    discount_amount: 0,//their is no any option for discount for items in this project
-                    total: data.total
-                }
 
-                await knex("sale_items").where("id", data.item_id).where('restaurent_id', req.user_data.restaurent_id).update(item_obj).then(response => {
-                    if (response[0]) {
-                        status = 200;
-                        message = "Sale has been created successfully!"
-                    }
-                }).catch(err => console.log(err))
-            } else {
+            })
 
-                // this condition if item is new 
-
-
-                let item_id = 0;
-                let item_obj = {
-                    uuid: await HELPERS.getKnexUuid(knex),
-                    restaurent_id: req.user_data.restaurent_id,
-                    sale_start_id: sale_start_id,
-                    product_id: data.item.value,
-                    product_name: data.item.label,
-                    description: data.description,
-                    qty: data.qty,
-                    mrp: data.mrp,
-                    free_qty: 0, //their is no any option for free in this project
-                    amount_before_tax: data.amount_item,
-                    tax_percent: data.tax,
-                    amount_after_tax: data.total,
-                    tax_amount: data.tax_amount,
-                    amount_before_discount: 0,//their is no any option for discount for items in this project
-                    discount_percent: 0,//their is no any option for discount for items in this project
-                    amount_after_discount: 0,//their is no any option for discount for items in this project
-                    discount_amount: 0,//their is no any option for discount for items in this project
-                    total: data.total
-                }
-
-                await knex("sale_items").where('restaurent_id', req.user_data.restaurent_id).insert(item_obj, "id").then(response => {
-                    if (response[0]) {
-                        item_id = response[0];
-                        status = 200;
-                        message = "Sale has been created successfully!"
-                    }
-                }).catch(err => console.log(err))
-            }
-        }
-
-        if (new_items_id.length > 0) {
-            for (let k = 0; k < new_items_id.length; k++) {
-                await knex("sale_items").where("id", new_items_id[k]).where('restaurent_id', req.user_data.restaurent_id).del().then(response => {
-                    status = 200;
-                    message = "Sale has been updated successfully!"
-                })
-            }
         }
     }
 
