@@ -55,7 +55,7 @@ router.filterDateProfit = async (req, res) => {
     let vehicle_sales = 0;
     let garage_sales = 0;
 
-    let sales_query = `select * from sale_start where sale_start.status=1 sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.sale_date BETWEEN '${inputs.from}' AND '${inputs.to}'`
+    let sales_query = `select * from sale_start where sale_start.status=1 and sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.sale_date BETWEEN '${inputs.from}' AND '${inputs.to}'`
     let expense_query = `select * from expenses where expenses.restaurent_id='${req.user_data.restaurent_id}' and expenses.expense_date BETWEEN '${inputs.from}' AND '${inputs.to}'`
 
 
