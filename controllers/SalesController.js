@@ -174,8 +174,6 @@ router.fetchById = async (req, res) => {
         }
     }).catch(err => console.log(err))
 
-    console.log(status,message,sale_header,sale_items)
-
     return res.json({ status, message, sale_header, sale_items })
 }
 
@@ -371,6 +369,60 @@ router.filterDateProfit = async (req, res) => {
     }).catch(err => console.log(err))
 
     return res.json({ status, message, sale_list})
+}
+
+router.fetchSalesList = async(req,res)=>{
+    let status = 500;
+    let message = 'Oops something went wrong!';
+    let list = [];
+
+    let default_query = "select * from sale_start";
+    let sort = "";
+    let total_records = "";
+
+    let count_query = "select COUNT(*) as total from sale_start";
+    
+    if (req.query.sort_order) {
+        sort = JSON.parse(req.query.sort_order);
+    }
+
+    let filter_query = ` where sale_start.restaurent_id='${req.user_data.restaurent_id}'`;
+
+    if (req.query.filter_value && req.query.to && req.query.from) {
+        filter_query = ` where sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.customer_name LIKE '%${req.query.filter_value}%' and sale_start.sale_date BETWEEN '${req.query.from}' AND '${req.query.to}'`
+    }
+    else if(req.query.filter_value){
+        filter_query = ` where sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.customer_name LIKE '%${req.query.filter_value}%'`
+    }
+    else if(req.query.to && req.query.from){
+        filter_query = ` where sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.sale_date BETWEEN '${req.query.from}' AND '${req.query.to}'`
+    }
+    
+    let order_by_query = " order by sale_start.id asc";
+
+    if (req.query.page_number && req.query.page_size) {
+        let offset = (req.query.page_number - 1) * (req.query.page_size);
+        order_by_query = ` order by sale_start.id asc LIMIT ${req.query.page_size} offset ${offset}`;
+        if (sort) {
+            order_by_query = ` order by sale_start.${sort.column} ${sort.order} LIMIT ${req.query.page_size} offset ${offset}`;
+        }
+    }
+
+    await knex.raw(default_query + filter_query + order_by_query).then(async response => {
+        if (response[0]) {
+            list = response[0];
+            await knex.raw(count_query + filter_query).then(response1 => {
+                if (response1[0]) {
+                    total_records = response1[0][0].total;
+                }
+            }).catch((err) => console.log(err));
+            status = 200;
+            message = "Sale List has been fetched successfully";
+        }
+    }).catch((err) => console.log(err));
+
+    return res.json({status, message, list, total_records})
+
 }
 
 module.exports = router;

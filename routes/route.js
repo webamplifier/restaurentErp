@@ -19,6 +19,7 @@ router.get('/userById/:id',Middlewares.checkAuth,UserController.fetchById);
 router.post('/updateuser/:id',Middlewares.checkAuth,UserController.update);
 router.get('/deleteuser/:id',Middlewares.checkAuth,UserController.delete);
 router.post('/editPassword/:id',Middlewares.checkAuth,UserController.updatePassword);
+router.get('/fetchUserList',Middlewares.checkAuth,UserController.fetchUserList);
 
 // restaurent routes
 router.post('/createRestaurant',Middlewares.checkAuth,RestaurentController.create);
@@ -33,7 +34,7 @@ router.get('/expenselist',Middlewares.checkAuth,ExpenseController.list);
 router.get('/expenseById/:id',Middlewares.checkAuth,ExpenseController.fetchById);
 router.post('/updateexpense/:id',Middlewares.checkAuth,ExpenseController.update);
 router.get('/deleteexpense/:id',Middlewares.checkAuth,ExpenseController.delete);
-router.post('/filterExpensesByDate',Middlewares.checkAuth,ExpenseController.filterDateProfit)
+router.get('/fetchexpenseList',Middlewares.checkAuth,ExpenseController.fetchExpenseList);
 
 // product routes
 router.get('/productlist',Middlewares.checkAuth,ProductController.list);
@@ -41,6 +42,7 @@ router.post('/createproduct',Middlewares.checkAuth,ProductController.create);
 router.get('/productById/:id',Middlewares.checkAuth,ProductController.fetchById);
 router.post('/updateproduct/:id',Middlewares.checkAuth,ProductController.update);
 router.get('/deleteproduct/:id',Middlewares.checkAuth,ProductController.delete);
+router.get('/fetchProductList',Middlewares.checkAuth,ProductController.fetchProductList);
 
 // sales related routes
 router.get('/salesList',Middlewares.checkAuth,SalesController.list)
@@ -50,7 +52,7 @@ router.get('/detail/sales/:id',Middlewares.checkAuth,SalesController.fetchById)
 router.post('/edit/sales/:id',Middlewares.checkAuth,SalesController.update)
 router.get('/delete/sales/:id',Middlewares.checkAuth,SalesController.delete)
 router.get('/fetchSalesDetail/:id',Middlewares.checkAuth,SalesController.fetchSalesDetail)
-router.post('/filterSalesByDate',Middlewares.checkAuth,SalesController.filterDateProfit)
+router.get('/fetchsalesList',Middlewares.checkAuth,SalesController.fetchSalesList);
 
 // profit routes
 router.get('/get-total-profile-record',Middlewares.checkAuth,ProfitController.getProfitAmountReport)

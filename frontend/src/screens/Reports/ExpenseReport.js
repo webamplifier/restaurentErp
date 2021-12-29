@@ -1,24 +1,15 @@
-import { CBadge, CCard, CCardBody, CCol, CDataTable } from '@coreui/react';
-import React from 'react';
+import React,{Fragment} from 'react';
 import { Link } from 'react-router-dom';
+import ReactDatatable from '@ashvin27/react-datatable';
 import { url } from 'src/helpers/helpers';
 import { toast, ToastContainer } from 'react-toastify'
 import { userContext } from '../../context/UserContext'
 import CustomModal from '../../components/CustomModal';
-const getBadge = status => {
-    switch (status) {
-        case 2: return 'success'
-        // case 2: return 'secondary'
-        case 1: return 'dark'
-        // case 'Banned': return 'danger'
-        default: return 'primary'
-    }
-}
 
 export default function ExpenseReport() {
-    const { user,setLoad } = React.useContext(userContext);
-    const fields = ['#', 'expense_date','to','item','paid_Amount','action'];
+    const { user, setLoad } = React.useContext(userContext);
     const [expenseList, setExpenseList] = React.useState([]);
+    const [total,setTotal] = React.useState("");
     const [modal, setModal] = React.useState(false);
     const [id, setId] = React.useState('')
     const [to, setTo] = React.useState('');
@@ -39,24 +30,24 @@ export default function ExpenseReport() {
                 setModal(false);
                 setId('');
                 async function fetchData() {
-                    const response = await fetch(url + 'expenselist', {
+                  const response = await fetch(url + 'fetchexpenseList', {
                         method: 'GET',
                         headers: {
                             'Authorization': user?.token
                         }
                     })
-        
+
                     if (response.ok === true) {
                         const data = await response.json();
                         setLoad(false)
                         if (data.status === 200) {
                             setExpenseList(data.expense_list);
+                            setTotal(parseInt(data.total_records));
                         } else {
                             toast.error(data.message);
                         }
                     }
                 }
-        
                 fetchData();
             } else {
                 toast.error(data.message)
@@ -65,31 +56,115 @@ export default function ExpenseReport() {
         deleteData();
     }
 
+    const columns = [
+        {
+            key: "expense_date",
+            text: "Expense_Date",
+            className: "expense_date",
+            sortable: true
+        },
+        {
+            key: "name",
+            text: "To",
+            className: "name",
+            sortable: true
+        },
+        {
+            key: "item_name",
+            text: "Item",
+            className: "item_name",
+            sortable: true
+        },
+        {
+            key: "paid_amount",
+            text: "Paid_Amount",
+            className: "paid_amount",
+            sortable: true
+        },
+        {
+            key: "action",
+            text: "Action",
+            className: "action",
+            width: 100,
+            sortable: false,
+            cell: record => {
+                return (
+                    <Fragment>
+                        <Link
+                            to={`/edit/expense/${record.id}`}
+                            style={{ marginRight: '5px' }}>
+                            <i className="fa fa-edit"></i>
+                        </Link>
+                        <i
+                            style={{ cursor: "pointer" }}
+                            onClick={() => showModal(record.id)}
+                            class="fa fa-trash"
+                            aria-hidden="true">
+                        </i>
+                    </Fragment>
+                );
+            }
+        }
+    ];
+    const config = {
+        page_size: 10,
+        length_menu: [10, 20, 50],
+        button: {
+            excel: false,
+            print: false,
+            extra: false,
+        }
+    }
+    async function fetchData(query) {
+        setLoad(true);
+        const response = await fetch(url + query, {
+            method: 'GET',
+            headers: {
+                'Authorization': user?.token
+            }
+        })
+        if (response.ok === true) {
+            const data = await response.json();
+            setLoad(false)
+            if (data.status === 200) {
+                setExpenseList(data.list);
+                setTotal(parseInt(data.total_records));
+            } else {
+                toast.error(data.message);
+            }
+        }
+    }
+
     const showModal = value => {
         setId(value);
         setModal(true)
     }
 
+    const handleChange = (e) => {
+        let query = `fetchexpenseList?page_number=${e.page_number}&page_size=${e.page_size}&filter_value=${e.filter_value}&to=${to}&from=${from}`;
+        if (e.sort_order) {
+            let sort = JSON.stringify(e.sort_order);
+            query = `fetchexpenseList?page_number=${e.page_number}&page_size=${e.page_size}&filter_value=${e.filter_value}&sort_order=${sort}&to=${to}&from=${from}`;
+        }
+        fetchData(query);
+    }
+
     function handleSubmit() {
         if (to && from) {
             setLoad(true)
-            const formData = new FormData();
-            formData.append('to', to);
-            formData.append('from', from);
             async function submit() {
-                const response = await fetch(url + 'filterExpensesByDate', {
-                    method: 'POST',
+                const response = await fetch(url + `fetchexpenseList?to=${to}&from=${from}`, {
+                    method: 'GET',
                     headers: {
                         'Authorization': user?.token
                     },
-                    body: formData
                 });
-
                 if (response.ok === true) {
                     const data = await response.json();
                     setLoad(false)
                     if (data.status == 200) {
-                        setExpenseList(data.expense_list);
+                        setExpenseList(data.list);
+                        setTotal(parseInt(data.total_records));
                     } else {
                         toast.error(data.message)
                     }
@@ -106,7 +181,7 @@ export default function ExpenseReport() {
     React.useEffect(() => {
         setLoad(true)
         async function fetchData() {
-            const response = await fetch(url + 'expenselist', {
+            const response = await fetch(url + 'fetchexpenseList', {
                 method: 'GET',
                 headers: {
                     'Authorization': user?.token
@@ -117,7 +192,8 @@ export default function ExpenseReport() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
-                    setExpenseList(data.expense_list);
+                    setExpenseList(data.list);
+                    setTotal(parseInt(data.total_records));
                 } else {
                     toast.error(data.message);
                 }
@@ -147,58 +223,14 @@ export default function ExpenseReport() {
             </div>
             <ToastContainer />
             <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
-            <CCol xs="12" lg="12">
-                <CCard>
-                    <CCardBody>
-                        <CDataTable
-                            items={expenseList}
-                            fields={fields}
-                            columnFilter
-                            tableFilter
-                            itemsPerPageSelect
-                            itemsPerPage={5}
-                            hover
-                            sorter
-                            pagination
-                            scopedSlots={{
-                                '#': (item, index) => (
-                                    <td>
-                                        {index + 1}
-                                    </td>
-                                ),
-                                'expense_date':(item)=>(
-                                    <td>
-                                        {item.expense_date.split(' ')[0]}
-                                    </td>
-                                ),
-                                'to':(item)=>(
-                                    <td>
-                                        {item.name}
-                                    </td>
-                                ),
-                                'item':(item)=>(
-                                    <td>
-                                    {item.item_name}
-                                    </td>
-                                ),
-                                'paid_Amount' : (item) => (
-                                    <td>
-                                        {item.paid_amount}
-                                    </td>
-                                ),
-                                'action': (item) => (
-                                    <td>
-                                        <Link to={`/edit/expense/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
-                                        <i style={{ cursor: "pointer" }} onClick={() => showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i>
-                                    </td>
-                                )
-
-                            }
-                            }
-                        />
-                    </CCardBody>
-                </CCard>
-            </CCol>
+            <ReactDatatable
+                    config={config}
+                    records={expenseList}
+                    columns={columns}
+                    total_record={total}
+                    onChange={(e)=>handleChange(e)}
+                    dynamic={true}
+                />
         </section>
     )
 }

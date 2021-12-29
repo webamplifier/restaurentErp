@@ -95,8 +95,7 @@ router.delete = async (req, res) => {
     let status = 500;
     let message = 'Oops something went wrong!';
     let { id } = req.params;
-    let inputs = req.body;
-
+    
     await knex('products').where('id', id).where("restaurent_id", req.user_data.restaurent_id).del().then(response => {
         if (response) {
             status = 200;
@@ -105,6 +104,53 @@ router.delete = async (req, res) => {
     }).catch(err => console.log(err))
 
     return res.json({ status, message })
+}
+
+router.fetchProductList = async(req,res)=>{
+    let status = 500;
+    let message = 'Oops something went wrong!';
+    let list = [];
+
+    let default_query = "select * from products";
+    let sort = "";
+    let total_records = "";
+
+    let count_query = "select COUNT(*) as total from products";
+    
+    if (req.query.sort_order) {
+        sort = JSON.parse(req.query.sort_order);
+    }
+
+    let filter_query = ` where products.restaurent_id='${req.user_data.restaurent_id}'`;
+
+    if(req.query.filter_value){
+        filter_query = ` where products.restaurent_id='${req.user_data.restaurent_id}' and products.name LIKE '%${req.query.filter_value}%'`
+    }
+    
+    let order_by_query = " order by products.id asc";
+
+    if (req.query.page_number && req.query.page_size) {
+        let offset = (req.query.page_number - 1) * (req.query.page_size);
+        order_by_query = ` order by products.id asc LIMIT ${req.query.page_size} offset ${offset}`;
+        if (sort) {
+            order_by_query = ` order by products.${sort.column} ${sort.order} LIMIT ${req.query.page_size} offset ${offset}`;
+        }
+    }
+
+    await knex.raw(default_query + filter_query + order_by_query).then(async response => {
+        if (response[0]) {
+            list = response[0];
+            await knex.raw(count_query + filter_query).then(response1 => {
+                if (response1[0]) {
+                    total_records = response1[0][0].total;
+                }
+            }).catch((err) => console.log(err));
+            status = 200;
+            message = "Product List has been fetched successfully";
+        }
+    }).catch((err) => console.log(err));
+
+    return res.json({status, message, list, total_records})
 }
 
 module.exports = router;

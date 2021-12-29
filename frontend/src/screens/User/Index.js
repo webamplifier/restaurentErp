@@ -1,5 +1,5 @@
-import { CBadge, CCard, CCardBody, CCol, CDataTable } from '@coreui/react';
-import React from 'react';
+import React, { Fragment } from 'react';
+import ReactDatatable from '@ashvin27/react-datatable';
 import { Link } from 'react-router-dom';
 import { url } from 'src/helpers/helpers';
 import { toast, ToastContainer } from 'react-toastify'
@@ -7,22 +7,12 @@ import { userContext } from '../../context/UserContext'
 import CustomModal from 'src/components/CustomModal';
 import InventoryAdjustModal from 'src/components/InventoryAdjustModal';
 
-const getBadge = status => {
-  switch (status) {
-    case '1': return 'success'
-    case '2': return 'secondary'
-    // case 'Pending': return 'warning'
-    // case 'Banned': return 'danger'
-    default: return 'primary'
-  }
-}
-
 export default function Index() {
   const [id, setId] = React.useState(null);
   const [password, setPassword] = React.useState('');
   const [modal, setModal] = React.useState(false)
   const { user, setLoad } = React.useContext(userContext);
-  const fields = ['#', 'restaurant_name', 'name', 'email', 'role', 'action'];
+  const [total, setTotal] = React.useState(0);
   const [userList, setUserList] = React.useState([]);
   const [showEditModal, setShowEditModal] = React.useState(false);
 
@@ -63,7 +53,7 @@ export default function Index() {
   React.useEffect(() => {
     setLoad(true)
     async function fetchData() {
-      const response = await fetch(url + 'userlist', {
+      const response = await fetch(url + 'fetchUserList', {
         method: 'GET',
         headers: {
           'Authorization': user?.token
@@ -75,16 +65,8 @@ export default function Index() {
         setLoad(false)
         console.log(data);
         if (data.status === 200) {
-          setUserList(data.users_list?.map((item, index) => {
-            return {
-              '#': index + 1,
-              'restaurant_name': item.restaurant_name,
-              'id': item.id,
-              'name': item.name,
-              'email': item.email,
-              'role': item.role,
-            }
-          }))
+          setUserList(data.list);
+          setTotal(parseInt(data.total_records));
         } else {
           toast.error(data.message)
         }
@@ -105,12 +87,12 @@ export default function Index() {
 
       const data = await response.json();
       setLoad(false)
-      if (data.status === 200) {
 
+      if (data.status === 200) {
         setModal(false);
         setId('');
         async function fetchData() {
-          const response = await fetch(url + 'userlist', {
+          const response = await fetch(url + 'fetchUserList', {
             method: 'GET',
             headers: {
               'Authorization': user?.token
@@ -121,21 +103,12 @@ export default function Index() {
             const data = await response.json();
             setLoad(false)
             if (data.status === 200) {
-              setUserList(data.users_list?.map((item, index) => {
-                return {
-                  '#': index + 1,
-                  'id': item.id,
-                  'restaurant_name': item.restaurant_name,
-                  'name': item.name,
-                  'email': item.email,
-                  'role': item.role,
-                }
-              }))
+              setUserList(data.list);
+              setTotal(parseInt(data.total_records));
             }
           }
         }
         fetchData();
-
       } else {
         toast.error(data.message)
       }
@@ -143,58 +116,115 @@ export default function Index() {
     deleteData();
   }
 
+  const columns = [
+    {
+      key: "restaurant_name",
+      text: "Restaurant_Name",
+      className: "restaurant_name",
+      sortable: true
+    },
+    {
+      key: "name",
+      text: "Name",
+      className: "name",
+      sortable: true
+    },
+    {
+      key: "email",
+      text: "Email",
+      className: "email",
+      sortable: true
+    },
+    {
+      key: "role",
+      text: "Role",
+      className: "role",
+      sortable: true
+    },
+    {
+      key: "action",
+      text: "Action",
+      className: "action",
+      width: 100,
+      sortable: false,
+      cell: record => {
+        return (
+          <Fragment>
+            {user?.role == 2 && <>
+              <Link to={`/edit/user/${record.id}`}>
+                <i class="fa fa-pencil" aria-hidden="true">
+                </i>
+              </Link>
+              <i style={{ cursor: 'pointer' }}
+                onClick={() => showModalFunc(record.id)}
+                class="fa fa-user" aria-hidden="true">
+              </i>
+              <i style={{ cursor: "pointer" }}
+                onClick={() => showModal(record.id)}
+                class="fa fa-trash" aria-hidden="true">
+              </i>
+            </>}
+          </Fragment>
+        );
+      }
+    }
+  ];
+  const config = {
+    page_size: 10,
+    length_menu: [10, 20, 50],
+    button: {
+      excel: false,
+      print: false,
+      extra: false,
+    }
+  }
+  async function fetchData(query) {
+    setLoad(true);
+    const response = await fetch(url + query, {
+      method: 'GET',
+      headers: {
+        'Authorization': user?.token
+      }
+    })
+    if (response.ok === true) {
+      const data = await response.json();
+      setLoad(false)
+      if (data.status === 200) {
+        setUserList(data.list);
+        setTotal(parseInt(data.total_records));
+      } else {
+        toast.error(data.message);
+      }
+    }
+  }
+
   const showModal = value => {
     setId(value);
     setModal(true)
   }
 
+  const handleChange = (e) => {
+    let query = `fetchUserList?page_number=${e.page_number}&page_size=${e.page_size}&filter_value=${e.filter_value}`;
+    if (e.sort_order) {
+      let sort = JSON.stringify(e.sort_order);
+      query = `fetchUserList?page_number=${e.page_number}&page_size=${e.page_size}&filter_value=${e.filter_value}&sort_order=${sort}`;
+    }
+    fetchData(query);
+  }
   return (
     <section>
       <ToastContainer />
       <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
       <InventoryAdjustModal header="Adjust Password" label="Enter new Password" showModal={showEditModal} setShowModal={setShowEditModal} adjustAmount={password} setAdjustAmount={setPassword} submitAdjust={submitAdjust} />
       <Link to='/create/user'>Create User</Link>
-      <CCol xs="12" lg="12">
-        <CCard>
-          <CCardBody>
-            <CDataTable
-              items={userList}
-              fields={fields}
-              columnFilter
-              tableFilter
-              itemsPerPageSelect
-              itemsPerPage={5}
-              hover
-              sorter
-              pagination
-              scopedSlots={{
-                'status':
-                  (item) => (
-                    <td>
-                      <CBadge color={getBadge(item.status_id)}>
-                        {item.status_id === 1 ? 'Active' : 'Inactive'}
-                      </CBadge>
-                    </td>
-                  ),
-                'role':
-                  (item) =>
-                  (<td>{(item.role === 2) ? "Restaurant_admin" : "Staff"}</td>
-                  ),
-                'action': (item) => (
-                  <td>
-                    {user?.role == 2 && <>
-                      <Link to={`/edit/user/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
-                      <i style={{ cursor: 'pointer' }} onClick={() => showModalFunc(item.id)} class="fa fa-user" aria-hidden="true"></i>
-                      <i style={{ cursor: "pointer" }} onClick={() => showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i></>}
-                  </td>
-                )
-
-              }
-              }
-            />
-          </CCardBody>
-        </CCard>
-      </CCol>
+      <ReactDatatable
+        config={config}
+        records={userList}
+        columns={columns}
+        total_record={total}
+        onChange={(e) => handleChange(e)}
+        dynamic={true}
+      />
     </section>
   )
 }

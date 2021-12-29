@@ -1,4 +1,3 @@
-import { CBadge, CCard, CCardBody, CCol, CDataTable } from '@coreui/react';
 import React from 'react';
 import { url } from 'src/helpers/helpers';
 import { toast, ToastContainer } from 'react-toastify'
