@@ -102,23 +102,23 @@ export default function DayWiseProfit() {
                 <table className='bg-white w-100 text-dark px-3 py-3'>
                     <tr>
                         <td>
-                            <p>Sales</p>
                             <p>Cash</p>
                             <p>Bank</p>
+                            <p>Total Sales</p>
                         </td>
                         <td> 
-                            <p>{sale}</p>
-                            <p>{cash}</p>
-                            <p>{bank}</p>
+                            <p style={{textAlign: 'center'}}>{cash}</p>
+                            <p style={{textAlign: 'center'}}>+ {bank}</p>
+                            <p style={{textAlign:'center', fontWeight:"bolder"}}>{sale}</p>
                         </td>
                     </tr>
                     <tr>
                         <td>Expense</td>
-                        <td>- {expense}</td>
+                        <td style={{fontWeight:"bolder", textAlign:'center'}}>- {expense}</td>
                     </tr>
                     <tr>
                         <td style={{fontWeight:'bold'}}>Total</td>
-                        <td style={{fontWeight:'bold'}}>{parseFloat(sale) - parseFloat(expense)}</td>
+                        <td style={{fontWeight:'bold', textAlign:'center'}}>{parseFloat(sale) - parseFloat(expense)}</td>
                     </tr>
                 </table>
             </section>
