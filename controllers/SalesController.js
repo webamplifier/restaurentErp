@@ -353,4 +353,24 @@ router.fetchSalesDetail = async (req, res) => {
     return res.json({ status, message, sale_header, sale_items, restaurent_detail })
 }
 
+// this below function is used to filter the data by date
+router.filterDateProfit = async (req, res) => {
+    let status = 500;
+    let message = 'Oops something went wrong!';
+    let inputs = req.body;
+    let sale_list = [];
+
+    let sales_query = `select * from sale_start where sale_start.status=1 and sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.sale_date BETWEEN '${inputs.from}' AND '${inputs.to}' order by sale_start.id desc`
+
+    await knex.raw(sales_query).then(response => {
+        if (response[0]) {
+            sale_list = response[0];
+            status = 200;
+            message = 'sales record has been fetched successfully!';
+        }
+    }).catch(err => console.log(err))
+
+    return res.json({ status, message, sale_list})
+}
+
 module.exports = router;

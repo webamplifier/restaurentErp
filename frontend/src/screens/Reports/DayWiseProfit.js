@@ -10,6 +10,8 @@ export default function DayWiseProfit() {
     const [sale, setSale] = React.useState(0);
     const [to, setTo] = React.useState('');
     const [from, setFrom] = React.useState('');
+    const [cash, setCash] = React.useState(0);
+    const [bank, setBank] = React.useState(0);
 
     React.useEffect(() => {
         setLoad(true)
@@ -27,6 +29,8 @@ export default function DayWiseProfit() {
                 if (data.status === 200) {
                     setExpense(data.expense_record);
                     setSale(data.sales_record);
+                    setCash(data.cash_record);
+                    setBank(data.bank_record);
                 } else {
                     toast.error(data.message);
                 }
@@ -57,6 +61,8 @@ export default function DayWiseProfit() {
                     if (data.status == 200) {
                         setExpense(data.expense_record);
                         setSale(data.sales_record);
+                        setCash(data.cash_record);
+                        setBank(data.bank_record);
                     } else {
                         toast.error(data.message)
                     }
@@ -95,8 +101,16 @@ export default function DayWiseProfit() {
             <section className='day-wise-profit-table col-md-4'>
                 <table className='bg-white w-100 text-dark px-3 py-3'>
                     <tr>
-                        <td>Sales</td>
-                        <td> {sale}</td>
+                        <td>
+                            <p>Sales</p>
+                            <p>Cash</p>
+                            <p>Bank</p>
+                        </td>
+                        <td> 
+                            <p>{sale}</p>
+                            <p>{cash}</p>
+                            <p>{bank}</p>
+                        </td>
                     </tr>
                     <tr>
                         <td>Expense</td>

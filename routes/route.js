@@ -33,6 +33,8 @@ router.get('/expenselist',Middlewares.checkAuth,ExpenseController.list);
 router.get('/expenseById/:id',Middlewares.checkAuth,ExpenseController.fetchById);
 router.post('/updateexpense/:id',Middlewares.checkAuth,ExpenseController.update);
 router.get('/deleteexpense/:id',Middlewares.checkAuth,ExpenseController.delete);
+router.post('/filterExpensesByDate',Middlewares.checkAuth,ExpenseController.filterDateProfit)
+
 // product routes
 router.get('/productlist',Middlewares.checkAuth,ProductController.list);
 router.post('/createproduct',Middlewares.checkAuth,ProductController.create);
@@ -48,6 +50,7 @@ router.get('/detail/sales/:id',Middlewares.checkAuth,SalesController.fetchById)
 router.post('/edit/sales/:id',Middlewares.checkAuth,SalesController.update)
 router.get('/delete/sales/:id',Middlewares.checkAuth,SalesController.delete)
 router.get('/fetchSalesDetail/:id',Middlewares.checkAuth,SalesController.fetchSalesDetail)
+router.post('/filterSalesByDate',Middlewares.checkAuth,SalesController.filterDateProfit)
 
 // profit routes
 router.get('/get-total-profile-record',Middlewares.checkAuth,ProfitController.getProfitAmountReport)

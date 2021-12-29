@@ -109,7 +109,7 @@ export default function Edit() {
                     let items = data.sale_items;
                     setInvoiceNo(header.invoice_number);
                     setPending(header.status == 1 ? false : true)
-                    setSaleDate(formatDateTime(header.sale_date));
+                    setSaleDate(header.sale_date);
                     setTaxAmount(header.taxable_amount);
                     setCustomer(header.customer_name);
                     setMobileNumber(header.customer_mobile);
@@ -353,7 +353,7 @@ export default function Edit() {
                         </div> */}
                         <div class="form-group col-md-4">
                             <label for="date">Sale Date</label>
-                            <input value={saleDate} onChange={e => setSaleDate(e.target.value)} readOnly type="date" class="form-control" id="date" />
+                            <input value={saleDate} onChange={e => setSaleDate(e.target.value)} type="date" class="form-control" id="date" />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="customer">Customer</label>
@@ -405,8 +405,6 @@ export default function Edit() {
                         </div>
 
                     </div>
-
-
 
                     {allItems.length > 0 && <div className='my-table-responsive'>
                         <table class="table mt-4">

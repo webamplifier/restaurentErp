@@ -10,7 +10,8 @@ router.getProfitAmountReport = async (req, res) => {
 
     let sales_record = 0;
     let expense_record = 0;
-
+    let cash_record = 0;
+    let bank_record = 0;
     let vehicle_sales = 0;
     let garage_sales = 0;
 
@@ -21,6 +22,12 @@ router.getProfitAmountReport = async (req, res) => {
             message = 'sales record has been fetched successfully!';
 
             for (let i = 0; i < response.length; i++) {
+                if(response[i].payment_type == "cash"){
+                    cash_record = parseFloat(cash_record) + parseFloat(response[i].total_after_roundoff);
+                }
+                if(response[i].payment_type == "bank"){
+                    bank_record = parseFloat(bank_record) + parseFloat(response[i].total_after_roundoff);
+                }
                 sales_record = parseFloat(sales_record) + parseFloat(response[i].total_after_roundoff)
             }
         }
@@ -37,10 +44,7 @@ router.getProfitAmountReport = async (req, res) => {
         }
     }).catch(err => console.log(err))
 
-
-
-
-    return res.json({ status, message, sales_record, expense_record })
+    return res.json({ status, message, sales_record, expense_record, cash_record, bank_record})
 }
 
 // this below function is used to filter the data by date
@@ -51,6 +55,8 @@ router.filterDateProfit = async (req, res) => {
 
     let sales_record = 0;
     let expense_record = 0;
+    let cash_record =0;
+    let bank_record =0;
 
     let vehicle_sales = 0;
     let garage_sales = 0;
@@ -65,6 +71,12 @@ router.filterDateProfit = async (req, res) => {
             message = 'sales record has been fetched successfully!';
 
             for (let i = 0; i < response[0].length; i++) {
+                if(response[0][i].payment_type == "cash"){
+                    cash_record = parseFloat(cash_record) + parseFloat(response[0][i].total_after_roundoff);
+                }
+                if(response[0][i].payment_type == "bank"){
+                    bank_record = parseFloat(bank_record) + parseFloat(response[0][i].total_after_roundoff);
+                }
                 sales_record = parseFloat(sales_record) + parseFloat(response[0][i].total_after_roundoff)
             }
         }
@@ -82,8 +94,7 @@ router.filterDateProfit = async (req, res) => {
     }).catch(err => console.log(err))
 
 
-    return res.json({ status, message, sales_record, expense_record })
+    return res.json({ status, message, sales_record, expense_record, cash_record, bank_record})
 }
-
 
 module.exports = router;

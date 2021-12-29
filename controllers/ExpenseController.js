@@ -125,4 +125,25 @@ router.delete = async (req, res) => {
     return res.json({ status, message })
 }
 
+// this below function is used to filter the expenses by date
+router.filterDateProfit = async (req, res) => {
+    let status = 500;
+    let message = 'Oops something went wrong!';
+    let inputs = req.body;
+    let expense_list = [];
+
+    let query = `select * from expenses where expenses.restaurent_id='${req.user_data.restaurent_id}' and expenses.expense_date BETWEEN '${inputs.from}' AND '${inputs.to}' order by expenses.id desc`
+
+    await knex.raw(query).then(response => {
+        if (response[0]) {
+            expense_list = response[0];
+            status = 200;
+            message = 'Expense record has been fetched successfully!';
+        }
+    }).catch(err => console.log(err))
+
+    return res.json({ status, message, expense_list})
+}
+
+
 module.exports = router;

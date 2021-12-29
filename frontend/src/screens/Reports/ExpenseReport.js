@@ -21,6 +21,8 @@ export default function ExpenseReport() {
     const [expenseList, setExpenseList] = React.useState([]);
     const [modal, setModal] = React.useState(false);
     const [id, setId] = React.useState('')
+    const [to, setTo] = React.useState('');
+    const [from, setFrom] = React.useState('');
 
     const deleteEntry = () => {
         setLoad(true)
@@ -68,6 +70,39 @@ export default function ExpenseReport() {
         setModal(true)
     }
 
+    function handleSubmit() {
+        if (to && from) {
+            setLoad(true)
+            const formData = new FormData();
+            formData.append('to', to);
+            formData.append('from', from);
+            async function submit() {
+                const response = await fetch(url + 'filterExpensesByDate', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': user?.token
+                    },
+                    body: formData
+                });
+
+                if (response.ok === true) {
+                    const data = await response.json();
+                    setLoad(false)
+                    if (data.status == 200) {
+                        setExpenseList(data.expense_list);
+                    } else {
+                        toast.error(data.message)
+                    }
+                } else {
+                    toast.error('Oops something went wrong!')
+                }
+            }
+            submit().catch(err => toast.error('Internal server error!. Please try again later'))
+        } else {
+            toast.error('Please fill the to and from date')
+        }
+    }
+
     React.useEffect(() => {
         setLoad(true)
         async function fetchData() {
@@ -94,6 +129,22 @@ export default function ExpenseReport() {
 
     return (
         <section>
+            <div className="container">
+                <div className="row align-items-center">
+                    <div className="form-group col-md-4">
+                        <label htmlFor="">From</label>
+                        <input type="date" value={from} onChange={e => setFrom(e.target.value)} className="form-control" />
+                    </div>
+                    <div className="form-group col-md-4">
+                        <label htmlFor="">To</label>
+                        <input type="date" value={to} onChange={e => setTo(e.target.value)} className="form-control" />
+                    </div>
+
+                    <div className="col-md-4">
+                        <button className="btn btn-primary" onClick={() => handleSubmit()}>Submit</button>
+                    </div>
+                </div>
+            </div>
             <ToastContainer />
             <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
             <CCol xs="12" lg="12">
