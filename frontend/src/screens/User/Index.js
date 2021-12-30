@@ -37,7 +37,6 @@ export default function Index() {
       if (respone.ok === true) {
         const data = await respone.json();
         setLoad(false)
-        console.log(data);
         if (data.status === 200) {
           setShowEditModal(false);
           setPassword('');
@@ -63,11 +62,19 @@ export default function Index() {
       if (response.ok === true) {
         const data = await response.json();
         setLoad(false)
-        console.log(data);
         if (data.status === 200) {
-          setUserList(data.list);
+          setUserList(data.list.map((item)=>{
+                  return{
+                    'id':item.id,
+                    'name': item.name,
+                    'email':item.email,
+                    'restaurant_name': item.restaurant_name,
+                    'role': item.role == '2' ? 'Restaurant_admin' : 'staff'
+                  }
+          }));
           setTotal(parseInt(data.total_records));
-        } else {
+        } 
+        else {
           toast.error(data.message)
         }
       }
@@ -103,7 +110,15 @@ export default function Index() {
             const data = await response.json();
             setLoad(false)
             if (data.status === 200) {
-              setUserList(data.list);
+              setUserList(data.list.map((item)=>{
+                return{
+                  'id': item.id,
+                  'name': item.name,
+                  'email':item.email,
+                  'restaurant_name': item.restaurant_name,
+                  'role': item.role == '2' ? 'Restaurant_admin' : 'staff'
+                }
+        }));
               setTotal(parseInt(data.total_records));
             }
           }
@@ -190,7 +205,15 @@ export default function Index() {
       const data = await response.json();
       setLoad(false)
       if (data.status === 200) {
-        setUserList(data.list);
+        setUserList(data.list.map((item)=>{
+          return{
+            'id': item.id,
+            'name': item.name,
+            'email':item.email,
+            'restaurant_name': item.restaurant_name,
+            'role': item.role == '2' ? 'Restaurant_admin' : 'staff'
+          }
+  }));
         setTotal(parseInt(data.total_records));
       } else {
         toast.error(data.message);

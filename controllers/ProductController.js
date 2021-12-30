@@ -72,8 +72,6 @@ router.update = async (req, res) => {
     let { id } = req.params;
     let inputs = req.body;
 
-    console.log(inputs);
-
     let update_obj = {
         price: inputs.price,
         name: inputs.product_name,
