@@ -29,7 +29,15 @@ export default function Index() {
 
         if (data.status === 200) {
           setLoad(false)
-          setProductList(data.list);
+          setProductList(data.list.map((item,index)=>{
+            return{
+              '#': index+1,
+              'id': item.id,
+              'name': item.name,
+              'price':item.price,
+              'stock_quantity': item.stock_quantity,
+            }
+    }));
           setTotal(data.total_records);
         }else{
           toast.error(data.message);
@@ -67,7 +75,15 @@ export default function Index() {
 
             if (data.status === 200) {
               setLoad(false)
-              setProductList(data.list);
+              setProductList(data.list.map((item,index)=>{
+                return{
+                  '#': index+1,
+                  'id': item.id,
+                  'name': item.name,
+                  'price':item.price,
+                  'stock_quantity': item.stock_quantity,
+                }
+        }));
               setTotal(data.total_records);
             }else{
               toast.error(data.message)
@@ -86,8 +102,14 @@ export default function Index() {
 
   const columns = [
     {
+      key: "#",
+      text: "#",
+      className: "#",
+      sortable: true
+    },
+    {
         key: "name",
-        text: "Product_Name",
+        text: "Product Name",
         className: "name",
         sortable: true
     },
@@ -114,8 +136,8 @@ export default function Index() {
                 <Fragment>
                     <Link
                         to={`/edit/products/${record.id}`}
-                        style={{ marginRight: '5px' }}>
-                        <i className="fa fa-edit"></i>
+                    >
+                        <i className="fa fa-pencil mr-2"></i>
                     </Link>
                     <i
                         style={{ cursor: "pointer" }}
@@ -149,7 +171,15 @@ async function fetchData(query) {
         const data = await response.json();
         setLoad(false)
         if (data.status === 200) {
-            setProductList(data.list);
+          setProductList(data.list.map((item,index)=>{
+            return{
+              '#': index+1,
+              'id': item.id,
+              'name': item.name,
+              'price':item.price,
+              'stock_quantity': item.stock_quantity,
+            }
+            }));
             setTotal(parseInt(data.total_records));
         } else {
             toast.error(data.message);
@@ -175,7 +205,7 @@ const handleChange = (e) => {
     <section>
       <ToastContainer />
       <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
-      <Link to='/create/products'>Create Product</Link>
+      <Link to='/create/products' className="btn btn-primary float-right" >Create Product</Link>
       <ReactDatatable
                     config={config}
                     records={productList}

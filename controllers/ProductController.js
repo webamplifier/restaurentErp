@@ -37,12 +37,19 @@ router.create = async (req, res) => {
         restaurent_id: req.user_data.restaurent_id
     }
 
-    await knex('products').insert(create_obj).then(response => {
-        if (response) {
-            status = 200;
-            message = 'Product has been created successfully!';
+    await knex('products').where('name', inputs.product_name).where("restaurent_id", req.user_data.restaurent_id).then(async response => {
+        if (response.length > 0) {
+            status = 400;
+            message = 'Product with this name already exist'
+        } else {
+            await knex('products').where('restaurent_id', req.user_data.restaurent_id).insert(create_obj).then(response => {
+                if (response) {
+                    status = 200;
+                    message = 'Product has been created successfully!';
+                }
+            }).catch(err => console.log(err))
         }
-    }).catch(err => console.log(err))
+    }).catch(err => console.log(err));
 
     return res.json({ status, message })
 }
@@ -122,14 +129,14 @@ router.fetchProductList = async(req,res)=>{
     let filter_query = ` where products.restaurent_id='${req.user_data.restaurent_id}'`;
 
     if(req.query.filter_value){
-        filter_query = ` where products.restaurent_id='${req.user_data.restaurent_id}' and products.name LIKE '%${req.query.filter_value}%'`
+        filter_query += ` and (products.name LIKE '%${req.query.filter_value}%' or products.price LIKE '%${req.query.filter_value}%' or products.stock_quantity LIKE '%${req.query.filter_value}%')`
     }
     
-    let order_by_query = " order by products.id asc";
+    let order_by_query = " order by products.id desc";
 
     if (req.query.page_number && req.query.page_size) {
         let offset = (req.query.page_number - 1) * (req.query.page_size);
-        order_by_query = ` order by products.id asc LIMIT ${req.query.page_size} offset ${offset}`;
+        order_by_query = ` order by products.id desc LIMIT ${req.query.page_size} offset ${offset}`;
         if (sort) {
             order_by_query = ` order by products.${sort.column} ${sort.order} LIMIT ${req.query.page_size} offset ${offset}`;
         }

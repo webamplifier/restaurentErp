@@ -1,7 +1,7 @@
 import React from 'react'
 import plus from '../../../assets/images_manual/add.svg'
 import Select from 'react-select';
-import { url, currentDate, formatDateTime } from 'src/helpers/helpers';
+import { url } from 'src/helpers/helpers';
 import { userContext } from '../../../context/UserContext'
 import { toast, ToastContainer } from 'react-toastify';
 import { useHistory, useParams } from 'react-router-dom'
@@ -112,6 +112,7 @@ export default function Edit() {
                     setSaleDate(header.sale_date);
                     setTaxAmount(header.taxable_amount);
                     setCustomer(header.customer_name);
+                    finalAmount = header.total_after_roundoff;
                     setMobileNumber(header.customer_mobile);
                     setDiscountType(header.discount_type)
                     let midItems = [];

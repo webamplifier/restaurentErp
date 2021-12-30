@@ -51,7 +51,17 @@ export default function SalesReport() {
                             const data = await response.json();
                             setLoad(false)
                             if (data.status === 200) {
-                                setSalesList(data.list);
+                                setSalesList(data.list.map((item,index)=>{
+                                    return{
+                                      '#': index+1,
+                                      'id': item.id,
+                                      'invoice_number': item.invoice_number,
+                                      'sale_date':item.sale_date,
+                                      'customer_name':item.customer_name,
+                                      'total_after_roundoff': item.total_after_roundoff,
+                                      'payment_type': item.payment_type
+                                    }
+                            }));
                                 setTotal(parseInt(data.total_records));
                                 setTo('');
                                 setFrom('');
@@ -90,7 +100,17 @@ export default function SalesReport() {
                     const data = await response.json();
                     setLoad(false)
                     if (data.status == 200) {
-                        setSalesList(data.list);
+                        setSalesList(data.list.map((item,index)=>{
+                            return{
+                              '#': index+1,
+                              'id': item.id,
+                              'invoice_number': item.invoice_number,
+                              'sale_date':item.sale_date,
+                              'customer_name':item.customer_name,
+                              'total_after_roundoff': item.total_after_roundoff,
+                              'payment_type': item.payment_type
+                            }
+                    }));
                         setTotal(parseInt(data.total_records))
                     } else {
                         toast.error(data.message)
@@ -132,7 +152,17 @@ export default function SalesReport() {
                         const data = await response.json();
                         setLoad(false)
                         if (data.status === 200) {
-                            setSalesList(data.list);
+                            setSalesList(data.list.map((item,index)=>{
+                                return{
+                                  '#': index+1,
+                                  'id': item.id,
+                                  'invoice_number': item.invoice_number,
+                                  'sale_date':item.sale_date,
+                                  'customer_name':item.customer_name,
+                                  'total_after_roundoff': item.total_after_roundoff,
+                                  'payment_type': item.payment_type
+                                }
+                        }));
                             setTotal(parseInt(data.total_records));
                         } else {
                             toast.error(data.message);
@@ -149,26 +179,38 @@ export default function SalesReport() {
     }
     const columns = [
         {
+            key: "#",
+            text: "#",
+            className: "id",
+            sortable: true
+        },
+        {
+            key: "invoice_number",
+            text: "Invoice No",
+            className: "invoice_number",
+            sortable: true
+        },
+        {
             key: "sale_date",
-            text: "Sale_Date",
+            text: "Sale Date",
             className: "sale_date",
             sortable: true
         },
         {
             key: "customer_name",
-            text: "Customer_Name",
+            text: "Customer Name",
             className: "customer_name",
             sortable: true
         },
         {
             key: "total_after_roundoff",
-            text: "Total_Amount",
+            text: "Total Amount",
             className: "total_after_roundoff",
             sortable: true
         },
         {
             key: "payment_type",
-            text: "Payment_Method",
+            text: "Payment Method",
             className: "payment_type",
             sortable: true
         },
@@ -182,19 +224,20 @@ export default function SalesReport() {
                 return (
                     <Fragment>
                         <Link to={`/printBill/${record.id}`}>
-                        <i class="fa fa-print" aria-hidden="true">
+                        <i class="fa fa-print mr-1" aria-hidden="true" style={{cursor:'pointer'}}>
                         </i>
                         </Link>
                         {user?.role == 2 && (
                         <>
                             <Link to={`/edit/sales/${record.id}`}>
-                                <i class="fa fa-pencil" aria-hidden="true">
+                                <i class="fa fa-pencil" aria-hidden="true" style={{cursor:'pointer'}}>
                                 </i>
                             </Link>
                             <i style={{ cursor: "pointer" }} 
                                onClick={() => showModal(record.id)} 
                                class="fa fa-trash" 
-                               aria-hidden="true">
+                               aria-hidden="true"
+                            >
                             </i>
                         </>)}
                     </Fragment>
@@ -223,7 +266,17 @@ export default function SalesReport() {
             const data = await response.json();
             setLoad(false)
             if (data.status === 200) {
-                setSalesList(data.list);
+                setSalesList(data.list.map((item,index)=>{
+                    return{
+                      '#': index+1,
+                      'id': item.id,
+                      'invoice_number': item.invoice_number,
+                      'sale_date':item.sale_date,
+                      'customer_name':item.customer_name,
+                      'total_after_roundoff': item.total_after_roundoff,
+                      'payment_type': item.payment_type
+                    }
+            }));
                 setTotal(parseInt(data.total_records));
             } else {
                 toast.error(data.message);
@@ -259,7 +312,17 @@ export default function SalesReport() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
-                    setSalesList(data.list);
+                    setSalesList(data.list.map((item,index)=>{
+                        return{
+                          '#': index+1,
+                          'id': item.id,
+                          'invoice_number': item.invoice_number,
+                          'sale_date':item.sale_date,
+                          'customer_name':item.customer_name,
+                          'total_after_roundoff': item.total_after_roundoff,
+                          'payment_type': item.payment_type
+                        }
+                }));
                     setTotal(parseInt(data.total_records));
                 } else {
                     toast.error(data.message);

@@ -63,8 +63,9 @@ export default function Index() {
         const data = await response.json();
         setLoad(false)
         if (data.status === 200) {
-          setUserList(data.list.map((item)=>{
+          setUserList(data.list.map((item,index)=>{
                   return{
+                    '#': index+1,
                     'id':item.id,
                     'name': item.name,
                     'email':item.email,
@@ -110,8 +111,9 @@ export default function Index() {
             const data = await response.json();
             setLoad(false)
             if (data.status === 200) {
-              setUserList(data.list.map((item)=>{
+              setUserList(data.list.map((item,index)=>{
                 return{
+                  '#': index+1,
                   'id': item.id,
                   'name': item.name,
                   'email':item.email,
@@ -133,8 +135,14 @@ export default function Index() {
 
   const columns = [
     {
+      key: "#",
+      text: "#",
+      className: "#",
+      sortable: true
+    },
+    {
       key: "restaurant_name",
-      text: "Restaurant_Name",
+      text: "Restaurant Name",
       className: "restaurant_name",
       sortable: true
     },
@@ -166,13 +174,13 @@ export default function Index() {
         return (
           <Fragment>
             {user?.role == 2 && <>
-              <Link to={`/edit/user/${record.id}`}>
-                <i class="fa fa-pencil" aria-hidden="true">
+              <Link to={`/edit/user/${record.id}`} >
+                <i class="fa fa-pencil mr-1" aria-hidden="true" style={{cursor:'pointer'}}>
                 </i>
               </Link>
               <i style={{ cursor: 'pointer' }}
                 onClick={() => showModalFunc(record.id)}
-                class="fa fa-user" aria-hidden="true">
+                class="fa fa-user mr-1" aria-hidden="true">
               </i>
               <i style={{ cursor: "pointer" }}
                 onClick={() => showModal(record.id)}
@@ -205,8 +213,9 @@ export default function Index() {
       const data = await response.json();
       setLoad(false)
       if (data.status === 200) {
-        setUserList(data.list.map((item)=>{
+        setUserList(data.list.map((item, index)=>{
           return{
+            '#': index+1,
             'id': item.id,
             'name': item.name,
             'email':item.email,
@@ -239,7 +248,7 @@ export default function Index() {
       <ToastContainer />
       <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
       <InventoryAdjustModal header="Adjust Password" label="Enter new Password" showModal={showEditModal} setShowModal={setShowEditModal} adjustAmount={password} setAdjustAmount={setPassword} submitAdjust={submitAdjust} />
-      <Link to='/create/user'>Create User</Link>
+      <Link to='/create/user' className="btn btn-primary float-right">Create User</Link>
       <ReactDatatable
         config={config}
         records={userList}

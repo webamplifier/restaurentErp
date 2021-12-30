@@ -333,4 +333,14 @@
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
 }
+
+/* new data table css */
+
+.input-group-addon.input-group-prepend{
+  background: transparent !important;
+}
+
+.c-header-brand.mx-auto.d-lg-none.active{
+  visibility: hidden;
+}
 /*# sourceMappingURL=App.css.map */

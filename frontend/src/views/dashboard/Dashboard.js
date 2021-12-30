@@ -1,5 +1,5 @@
-import { CBadge, CCard, CCardBody, CCol, CDataTable } from '@coreui/react';
-import React from 'react';
+import React, { Fragment } from 'react';
+import ReactDatatable from '@ashvin27/react-datatable';
 import { Link } from 'react-router-dom';
 import { url } from 'src/helpers/helpers';
 import { toast, ToastContainer } from 'react-toastify'
@@ -7,24 +7,16 @@ import { userContext } from '../../context/UserContext'
 import CustomModal from '../../components/CustomModal';
 import PayModal from '../../components/PayModal';
 
-const getBadge = status => {
-  switch (status) {
-    case 2: return 'success'
-    // case 2: return 'secondary'
-    case 1: return 'dark'
-    // case 'Banned': return 'danger'
-    default: return 'primary'
-  }
-}
-
 export default function Dashboard() {
   const { user, setLoad } = React.useContext(userContext);
-  const fields = ['#', 'invoice_number', 'customer_name', 'sale_date', 'total_amount', 'payment_Method', 'action'];
   const [salesList, setSalesList] = React.useState([]);
   const [modal, setModal] = React.useState(false);
   const [paymodal, setPayModal] = React.useState(false);
   const [payAmount, setPayAmount] = React.useState('');
   const [paymentMode, setPaymentMode] = React.useState('')
+  const [to, setTo] = React.useState('');
+  const [from, setFrom] = React.useState('');
+  const [total, setTotal] = React.useState(0);
   const [id, setId] = React.useState('')
 
   const payBill = () => {
@@ -48,7 +40,7 @@ export default function Dashboard() {
           setPayModal(false);
           setId('');
           async function fetchData() {
-            const response = await fetch(url + 'salesList', {
+            const response = await fetch(url + 'salesListPending', {
               method: 'GET',
               headers: {
                 'Authorization': user?.token
@@ -59,7 +51,18 @@ export default function Dashboard() {
               const data = await response.json();
               setLoad(false)
               if (data.status === 200) {
-                setSalesList(data.sale_list);
+                setSalesList(data.sale_list.map((item, index) => {
+                  return {
+                    '#': index + 1,
+                    'id': item.id,
+                    'invoice_number': item.invoice_number,
+                    'sale_date': item.sale_date,
+                    'customer_name': item.customer_name,
+                    'total_after_roundoff': item.total_after_roundoff,
+                    'payment_type': item.payment_type
+                  }
+                }));
+                setTotal(parseInt(data.total_records));
               } else {
                 toast.error(data.message);
               }
@@ -97,7 +100,7 @@ export default function Dashboard() {
         setModal(false);
         setId('');
         async function fetchData() {
-          const response = await fetch(url + 'salesList', {
+          const response = await fetch(url + 'salesListPending', {
             method: 'GET',
             headers: {
               'Authorization': user?.token
@@ -108,7 +111,18 @@ export default function Dashboard() {
             const data = await response.json();
             setLoad(false)
             if (data.status === 200) {
-              setSalesList(data.sale_list);
+              setSalesList(data.sale_list.map((item, index) => {
+                return {
+                  '#': index + 1,
+                  'id': item.id,
+                  'invoice_number': item.invoice_number,
+                  'sale_date': item.sale_date,
+                  'customer_name': item.customer_name,
+                  'total_after_roundoff': item.total_after_roundoff,
+                  'payment_type': item.payment_type
+                }
+              }));
+              setTotal(parseInt(data.total_records))
             } else {
               toast.error(data.message);
             }
@@ -123,12 +137,122 @@ export default function Dashboard() {
     deleteData();
   }
 
+  const columns = [
+    {
+      key: "#",
+      text: "#",
+      className: "id",
+      sortable: true
+    },
+    {
+      key: "invoice_number",
+      text: "Invoice No",
+      className: "invoice_number",
+      sortable: true
+    },
+    {
+      key: "sale_date",
+      text: "Sale Date",
+      className: "sale_date",
+      sortable: true
+    },
+    {
+      key: "customer_name",
+      text: "Customer Name",
+      className: "customer_name",
+      sortable: true
+    },
+    {
+      key: "total_after_roundoff",
+      text: "Total Amount",
+      className: "total_after_roundoff",
+      sortable: true
+    },
+    {
+      key: "payment_type",
+      text: "Payment Method",
+      className: "payment_type",
+      sortable: true
+    },
+    {
+      key: "action",
+      text: "Action",
+      className: "action",
+      width: 100,
+      sortable: false,
+      cell: record => {
+        return (
+          <Fragment>
+            <Link to={`/edit/sales/${record.id}`}>
+              <i class="fa fa-pencil mr-2" aria-hidden="true" style={{ cursor: 'pointer' }}>
+              </i>
+            </Link>
+            {user?.role == 2 && (<>
+              <i style={{ cursor: "pointer" }}
+                onClick={() => showModal(record.id)}
+                class="fa fa-trash"
+                aria-hidden="true"
+              >
+              </i>
+            </>)
+            }
+          </Fragment>
+        );
+      }
+    }
+  ];
+  const config = {
+    page_size: 10,
+    length_menu: [10, 20, 50],
+    button: {
+      excel: false,
+      print: false,
+      extra: false,
+    }
+  }
+  async function fetchData(query) {
+    setLoad(true);
+    const response = await fetch(url + query, {
+      method: 'GET',
+      headers: {
+        'Authorization': user?.token
+      }
+    })
+    if (response.ok === true) {
+      const data = await response.json();
+      setLoad(false)
+      if (data.status === 200) {
+        setSalesList(data.sale_list.map((item, index) => {
+          return {
+            '#': index + 1,
+            'id': item.id,
+            'invoice_number': item.invoice_number,
+            'sale_date': item.sale_date,
+            'customer_name': item.customer_name,
+            'total_after_roundoff': item.total_after_roundoff,
+            'payment_type': item.payment_type
+          }
+        }));
+        setTotal(parseInt(data.total_records));
+      } else {
+        toast.error(data.message);
+      }
+    }
+  }
+
   const showModal = value => {
     setId(value);
     setModal(true)
   }
 
-
+  const handleChange = (e) => {
+    let query = `salesListPending?page_number=${e.page_number}&page_size=${e.page_size}&filter_value=${e.filter_value}&to=${to}&from=${from}`;
+    if (e.sort_order) {
+      let sort = JSON.stringify(e.sort_order);
+      query = `salesListPending?page_number=${e.page_number}&page_size=${e.page_size}&filter_value=${e.filter_value}&sort_order=${sort}&to=${to}&from=${from}`;
+    }
+    fetchData(query);
+  }
 
   React.useEffect(() => {
     setLoad(true)
@@ -144,7 +268,18 @@ export default function Dashboard() {
         const data = await response.json();
         setLoad(false)
         if (data.status === 200) {
-          setSalesList(data.sale_list);
+          setSalesList(data.sale_list.map((item, index) => {
+            return {
+              '#': index + 1,
+              'id': item.id,
+              'invoice_number': item.invoice_number,
+              'sale_date': item.sale_date,
+              'customer_name': item.customer_name,
+              'total_after_roundoff': item.total_after_roundoff,
+              'payment_type': item.payment_type
+            }
+          }));
+          setTotal(parseInt(data.total_records));
         } else {
           toast.error(data.message);
         }
@@ -153,82 +288,75 @@ export default function Dashboard() {
 
     fetchData();
   }, [])
+  
+  function handleSubmit() {
+    if (to && from) {
+        setLoad(true)
+        async function submit() {
+            const response = await fetch(url + `salesListPending?to=${to}&from=${from}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': user?.token
+                },
+            });
+
+            if (response.ok === true) {
+                const data = await response.json();
+                setLoad(false)
+                if (data.status == 200) {
+                    setSalesList(data.sale_list.map((item,index)=>{
+                        return{
+                          '#': index+1,
+                          'id': item.id,
+                          'invoice_number': item.invoice_number,
+                          'sale_date':item.sale_date,
+                          'customer_name':item.customer_name,
+                          'total_after_roundoff': item.total_after_roundoff,
+                          'payment_type': item.payment_type
+                        }
+                }));
+                    setTotal(parseInt(data.total_records))
+                } else {
+                    toast.error(data.message)
+                }
+            } else {
+                toast.error('Oops something went wrong!')
+            }
+        }
+        submit().catch(err => toast.error('Internal server error!. Please try again later'))
+    } else {
+        toast.error('Please fill the to and from date')
+    }
+}
 
   return (
     <section>
+      <div className="container">
+        <div className="row align-items-center">
+          <div className="form-group col-md-4">
+            <label htmlFor="">From</label>
+            <input type="date" value={from} onChange={e => setFrom(e.target.value)} className="form-control" />
+          </div>
+          <div className="form-group col-md-4">
+            <label htmlFor="">To</label>
+            <input type="date" value={to} onChange={e => setTo(e.target.value)} className="form-control" />
+          </div>
+          <div className="col-md-4">
+            <button className="btn btn-primary" onClick={() => handleSubmit()}>Submit</button>
+          </div>
+        </div>
+      </div>
       <ToastContainer />
       <CustomModal modal={modal} setModal={setModal} deleteEntry={deleteEntry} />
       <PayModal paymodal={paymodal} setPayModal={setPayModal} payAmount={payAmount} setPayAmount={setPayAmount} paymentMode={paymentMode} payBill={payBill} setPaymentMode={setPaymentMode} />
-      <CCol xs="12" lg="12">
-        <CCard>
-          <CCardBody>
-            <CDataTable
-              items={salesList}
-              fields={fields}
-              columnFilter
-              tableFilter
-              itemsPerPageSelect
-              itemsPerPage={5}
-              hover
-              sorter
-              pagination
-              scopedSlots={{
-                '#': (item, index) => (
-                  <td>
-                    {index + 1}
-                  </td>
-                ),
-                'invoice_number': (item) => (
-                  <td>
-                    {item.invoice_number}
-                  </td>
-                ),
-                'customer_name': (item) => (
-                  <td>
-                    {item.customer_name}
-                  </td>
-                ),
-                'sale_date': (item) => (
-                  <td>
-                    {item.sale_date.split(' ')[0]}
-                  </td>
-                ),
-                'total_amount': (item) => (
-                  <td>
-                    {item.total_after_roundoff}
-                  </td>
-                ),
-                'payment_Method': (item) => (
-                  <td>
-                    {item.payment_type}
-                  </td>
-                ),
-                'status':
-                  (item) => (
-                    <td>
-                      <CBadge color={getBadge(item.status_id)}>
-                        {item.status_id === 1 ? 'Un Paid' : 'Paid'}
-                      </CBadge>
-                      <Link to={`/edit/sales/${item.id}`}>
-                        <i className="fa fa-pencil"></i>
-                      </Link>
-                    </td>
-                  ),
-                'action': (item) => (
-                  <td>
-                    {/* <Link to={`/printBill/${item.id}`}><i class="fa fa-print" aria-hidden="true"></i></Link> */}
-                    <Link to={`/edit/sales/${item.id}`}><i class="fa fa-pencil" aria-hidden="true"></i></Link>
-                    {user?.role == 2 && (<>
-                      <i style={{ cursor: "pointer" }} onClick={() => showModal(item.id)} class="fa fa-trash" aria-hidden="true"></i></>)}
-                  </td>
-                )
-
-              }
-              }
-            />
-          </CCardBody>
-        </CCard>
-      </CCol>
+      <ReactDatatable
+        config={config}
+        records={salesList}
+        columns={columns}
+        total_record={total}
+        onChange={(e) => handleChange(e)}
+        dynamic={true}
+      />
     </section>
   )
 }

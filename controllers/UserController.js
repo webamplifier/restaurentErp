@@ -271,7 +271,7 @@ router.fetchUserList = async(req,res)=>{
     let filter_query = ` where users.role != 1 and users.restaurent_id='${req.user_data.restaurent_id}'`;
 
     if(req.query.filter_value){
-        filter_query = ` where users.role != 1 and users.restaurent_id='${req.user_data.restaurent_id}' and users.name LIKE '%${req.query.filter_value}%'`
+        filter_query += ` and (users.name LIKE '%${req.query.filter_value}%' or users.restaurant_name LIKE '%${req.query.filter_value}%' or users.email LIKE '%${req.query.filter_value}%')`
     }
     
     let order_by_query = " order by users.id asc";

@@ -152,31 +152,30 @@ router.fetchExpenseList = async(req,res)=>{
 
     let default_query = "select * from expenses";
     let sort = "";
-    let total_records = "";
+    let total_records = "";  
 
     let count_query = "select COUNT(*) as total from expenses";
     
     if (req.query.sort_order) {
         sort = JSON.parse(req.query.sort_order);
     }
-
     let filter_query = ` where expenses.restaurent_id='${req.user_data.restaurent_id}'`;
 
-    if (req.query.filter_value && req.query.to && req.query.from) {
-        filter_query = ` where expenses.restaurent_id='${req.user_data.restaurent_id}' and expenses.name LIKE '%${req.query.filter_value}%' and expenses.expense_date BETWEEN '${req.query.from}' AND '${req.query.to}'`
+    if(req.query.filter_value){
+        filter_query += ` and (expenses.name LIKE '%${req.query.filter_value}%' or expenses.item_name LIKE '%${req.query.filter_value}%' or expenses.paid_amount LIKE '%${req.query.filter_value}%')`
     }
-    else if(req.query.filter_value){
-        filter_query = ` where expenses.restaurent_id='${req.user_data.restaurent_id}' and expenses.name LIKE '%${req.query.filter_value}%'`
-    }
-    else if(req.query.to && req.query.from){
-        filter_query = ` where expenses.restaurent_id='${req.user_data.restaurent_id}' and expenses.expense_date BETWEEN '${req.query.from}' AND '${req.query.to}'`
+
+    if(req.query.to && req.query.from){
+        let date_from = HELPERS.formatDate(req.query.from);
+        let date_to = HELPERS.formatDate(req.query.to);
+        filter_query += ` and ((expenses.expense_date BETWEEN '${req.query.from}' AND '${req.query.to}') or (expenses.expense_date BETWEEN '${date_from}' AND '${date_to}'))`
     }
     
-    let order_by_query = " order by expenses.id asc";
+    let order_by_query = " order by expenses.id desc";
 
     if (req.query.page_number && req.query.page_size) {
         let offset = (req.query.page_number - 1) * (req.query.page_size);
-        order_by_query = ` order by expenses.id asc LIMIT ${req.query.page_size} offset ${offset}`;
+        order_by_query = ` order by expenses.id desc LIMIT ${req.query.page_size} offset ${offset}`;
         if (sort) {
             order_by_query = ` order by expenses.${sort.column} ${sort.order} LIMIT ${req.query.page_size} offset ${offset}`;
         }
@@ -196,7 +195,6 @@ router.fetchExpenseList = async(req,res)=>{
     }).catch((err) => console.log(err));
 
     return res.json({status, message, list, total_records})
-
 }
 
 module.exports = router;

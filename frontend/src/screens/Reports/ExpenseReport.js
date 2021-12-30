@@ -41,7 +41,16 @@ export default function ExpenseReport() {
                         const data = await response.json();
                         setLoad(false)
                         if (data.status === 200) {
-                            setExpenseList(data.expense_list);
+                            setExpenseList(data.list.map((item,index)=>{
+                                return{
+                                  '#': index+1,
+                                  'id': item.id,
+                                  'expense_date': item.expense_date,
+                                  'name':item.name,
+                                  'item_name':item.item_name,
+                                  'paid_amount': item.paid_amount,
+                                }
+                        }));
                             setTotal(parseInt(data.total_records));
                         } else {
                             toast.error(data.message);
@@ -58,8 +67,14 @@ export default function ExpenseReport() {
 
     const columns = [
         {
+            key: "#",
+            text: "#",
+            className: "#",
+            sortable: true
+        },
+        {
             key: "expense_date",
-            text: "Expense_Date",
+            text: "Expense Date",
             className: "expense_date",
             sortable: true
         },
@@ -77,7 +92,7 @@ export default function ExpenseReport() {
         },
         {
             key: "paid_amount",
-            text: "Paid_Amount",
+            text: "Paid Amount",
             className: "paid_amount",
             sortable: true
         },
@@ -92,8 +107,8 @@ export default function ExpenseReport() {
                     <Fragment>
                         <Link
                             to={`/edit/expense/${record.id}`}
-                            style={{ marginRight: '5px' }}>
-                            <i className="fa fa-edit"></i>
+                            style={{ cursor: "pointer" }}>
+                            <i className="fa fa-pencil mr-2"></i>
                         </Link>
                         <i
                             style={{ cursor: "pointer" }}
@@ -127,7 +142,16 @@ export default function ExpenseReport() {
             const data = await response.json();
             setLoad(false)
             if (data.status === 200) {
-                setExpenseList(data.list);
+                setExpenseList(data.list.map((item,index)=>{
+                    return{
+                      '#': index+1,
+                      'id': item.id,
+                      'expense_date': item.expense_date,
+                      'name':item.name,
+                      'item_name':item.item_name,
+                      'paid_amount': item.paid_amount,
+                    }
+            }));
                 setTotal(parseInt(data.total_records));
             } else {
                 toast.error(data.message);
@@ -163,7 +187,16 @@ export default function ExpenseReport() {
                     const data = await response.json();
                     setLoad(false)
                     if (data.status == 200) {
-                        setExpenseList(data.list);
+                        setExpenseList(data.list.map((item,index)=>{
+                            return{
+                              '#': index+1,
+                              'id': item.id,
+                              'expense_date': item.expense_date,
+                              'name':item.name,
+                              'item_name':item.item_name,
+                              'paid_amount': item.paid_amount,
+                            }
+                    }));
                         setTotal(parseInt(data.total_records));
                     } else {
                         toast.error(data.message)
@@ -192,7 +225,16 @@ export default function ExpenseReport() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
-                    setExpenseList(data.list);
+                    setExpenseList(data.list.map((item,index)=>{
+                        return{
+                          '#': index+1,
+                          'id': item.id,
+                          'expense_date': item.expense_date,
+                          'name':item.name,
+                          'item_name':item.item_name,
+                          'paid_amount': item.paid_amount,
+                        }
+                }));
                     setTotal(parseInt(data.total_records));
                 } else {
                     toast.error(data.message);

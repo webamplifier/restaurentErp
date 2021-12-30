@@ -23,15 +23,53 @@ router.listPending = async (req, res) => {
     let status = 500;
     let message = "Oops something went wrong!";
     let sale_list = [];
+    
+    let default_query = "select * from sale_start";
+    let sort = "";
+    let total_records = "";
+    
+    let count_query = "select COUNT(*) as total from sale_start";
+    
+    if (req.query.sort_order) {
+        
+        sort = JSON.parse(req.query.sort_order);
+    }
 
+    let filter_query = ` where sale_start.restaurent_id='${req.user_data.restaurent_id}' and status=2`;
 
-    await knex("sale_start").where('restaurent_id', req.user_data.restaurent_id).where("status",2).orderBy("id", "desc").then(response => {
-        sale_list = response;
-        status = 200;
-        message = "Sale record has been fetched!"
-    }).catch(err => console.log(err))
+    if(req.query.filter_value){
+        filter_query += ` and (sale_start.invoice_number LIKE '%${req.query.filter_value}%' or sale_start.customer_name LIKE '%${req.query.filter_value}%' or sale_start.total_after_roundoff LIKE '%${req.query.filter_value}%' or sale_start.payment_type LIKE '%${req.query.filter_value}%')`
+    }
+    if(req.query.to && req.query.from){
+        let date_from = HELPERS.formatDate(req.query.from);
+        let date_to = HELPERS.formatDate(req.query.to);
+        filter_query += ` and ((sale_start.sale_date BETWEEN '${req.query.from}' AND '${req.query.to}') or (sale_start.sale_date BETWEEN '${date_from}' AND '${date_to}'))`;
+    }
+    
+    let order_by_query = " order by sale_start.id desc";
 
-    return res.json({ status, message, sale_list })
+    if (req.query.page_number && req.query.page_size) {
+        let offset = (req.query.page_number - 1) * (req.query.page_size);
+        order_by_query = ` order by sale_start.id desc LIMIT ${req.query.page_size} offset ${offset}`;
+        if (sort) {
+            order_by_query = ` order by sale_start.${sort.column} ${sort.order} LIMIT ${req.query.page_size} offset ${offset}`;
+        }
+    }
+    
+    await knex.raw(default_query + filter_query + order_by_query).then(async response => {
+        if (response[0]) {
+            sale_list = response[0];
+            await knex.raw(count_query + filter_query).then(response1 => {
+                if (response1[0]) {
+                    total_records = response1[0][0].total;
+                }
+            }).catch((err) => console.log(err));
+            status = 200;
+            message = "Sale List has been fetched successfully";
+        }
+    }).catch((err) => console.log(err));
+
+    return res.json({ status, message, sale_list, total_records })
 }
 
 // this below function is used to create sale entry
@@ -130,17 +168,14 @@ router.create = async (req, res) => {
                                 stock_quantity: (parseInt(responseProduct[0].stock_quantity) - parseInt(data.qty)).toString()
                             }).then(response => {
                                 status = 200;
-                                message = "Quantity updated successfully"
+                                message = "Sale Entry has been created successfully"
                             }).catch(err => console.log(err))
                         }
                     }
-
-
                 })
 
             }
         }
-
     })
 
     return res.json({ status, message })
@@ -170,7 +205,7 @@ router.fetchById = async (req, res) => {
         if (response.length > 0) {
             sale_items = response;
             status = 200;
-            message = "Purchase record has been fetched successfully"
+            message = "Sale record has been fetched successfully"
         }
     }).catch(err => console.log(err))
 
@@ -193,8 +228,6 @@ router.update = async (req, res) => {
     let new_items_id = [];
 
     let items = JSON.parse(inputs.allItems)
-
-
 
     let update = {
         invoice_number: header.invoiceNo,
@@ -260,7 +293,7 @@ router.update = async (req, res) => {
                         if (response[0]) {
                             item_id = response[0];
                             status = 200;
-                            message = "Sale has been created successfully!"
+                            message = "Sale has been updated successfully!"
                         }
                     }).catch(err => console.log(err))
 
@@ -269,14 +302,11 @@ router.update = async (req, res) => {
                             stock_quantity: (parseInt(responseProduct[0].stock_quantity) - parseInt(data.qty)).toString()
                         }).then(response => {
                             status = 200;
-                            message = "Quantity updated successfully"
+                            message = "Sale Entry has been updated successfully"
                         }).catch(err => console.log(err))
                     }
                 }
-
-
             })
-
         }
     }
 
@@ -336,7 +366,7 @@ router.fetchSalesDetail = async (req, res) => {
         if (response.length > 0) {
             sale_items = response;
             status = 200;
-            message = "Purchase record has been fetched successfully"
+            message = "Sale Entry record has been fetched successfully"
         }
     }).catch(err => console.log(err))
 
@@ -344,31 +374,11 @@ router.fetchSalesDetail = async (req, res) => {
         if (response.length > 0) {
             restaurent_detail = response[0];
             status = 200;
-            message = "Purchase record has been fetched successfully"
+            message = "Sale Entry record has been fetched successfully"
         }
     }).catch(err => console.log(err))
 
     return res.json({ status, message, sale_header, sale_items, restaurent_detail })
-}
-
-// this below function is used to filter the data by date
-router.filterDateProfit = async (req, res) => {
-    let status = 500;
-    let message = 'Oops something went wrong!';
-    let inputs = req.body;
-    let sale_list = [];
-
-    let sales_query = `select * from sale_start where sale_start.status=1 and sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.sale_date BETWEEN '${inputs.from}' AND '${inputs.to}' order by sale_start.id desc`
-
-    await knex.raw(sales_query).then(response => {
-        if (response[0]) {
-            sale_list = response[0];
-            status = 200;
-            message = 'sales record has been fetched successfully!';
-        }
-    }).catch(err => console.log(err))
-
-    return res.json({ status, message, sale_list})
 }
 
 router.fetchSalesList = async(req,res)=>{
@@ -388,21 +398,20 @@ router.fetchSalesList = async(req,res)=>{
 
     let filter_query = ` where sale_start.restaurent_id='${req.user_data.restaurent_id}'`;
 
-    if (req.query.filter_value && req.query.to && req.query.from) {
-        filter_query = ` where sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.customer_name LIKE '%${req.query.filter_value}%' and sale_start.sale_date BETWEEN '${req.query.from}' AND '${req.query.to}'`
+    if(req.query.filter_value){
+        filter_query += ` and (sale_start.invoice_number LIKE '%${req.query.filter_value}%' or sale_start.customer_name LIKE '%${req.query.filter_value}%' or sale_start.total_after_roundoff LIKE '%${req.query.filter_value}%' or sale_start.payment_type LIKE '%${req.query.filter_value}%')`
     }
-    else if(req.query.filter_value){
-        filter_query = ` where sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.customer_name LIKE '%${req.query.filter_value}%'`
-    }
-    else if(req.query.to && req.query.from){
-        filter_query = ` where sale_start.restaurent_id='${req.user_data.restaurent_id}' and sale_start.sale_date BETWEEN '${req.query.from}' AND '${req.query.to}'`
+    if(req.query.to && req.query.from){
+        let date_from = HELPERS.formatDate(req.query.from);
+        let date_to = HELPERS.formatDate(req.query.to);
+        filter_query += ` and ((sale_start.sale_date BETWEEN '${req.query.from}' AND '${req.query.to}') or (sale_start.sale_date BETWEEN '${date_from}' AND '${date_to}'))`;
     }
     
-    let order_by_query = " order by sale_start.id asc";
+    let order_by_query = " order by sale_start.id desc";
 
     if (req.query.page_number && req.query.page_size) {
         let offset = (req.query.page_number - 1) * (req.query.page_size);
-        order_by_query = ` order by sale_start.id asc LIMIT ${req.query.page_size} offset ${offset}`;
+        order_by_query = ` order by sale_start.id desc LIMIT ${req.query.page_size} offset ${offset}`;
         if (sort) {
             order_by_query = ` order by sale_start.${sort.column} ${sort.order} LIMIT ${req.query.page_size} offset ${offset}`;
         }
