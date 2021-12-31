@@ -274,7 +274,7 @@ router.fetchUserList = async(req,res)=>{
         filter_query += ` and (users.name LIKE '%${req.query.filter_value}%' or users.restaurant_name LIKE '%${req.query.filter_value}%' or users.email LIKE '%${req.query.filter_value}%')`
     }
     
-    let order_by_query = " order by users.id asc";
+    let order_by_query = " order by users.id asc LIMIT 10 offset 0";
 
     if (req.query.page_number && req.query.page_size) {
         let offset = (req.query.page_number - 1) * (req.query.page_size);
