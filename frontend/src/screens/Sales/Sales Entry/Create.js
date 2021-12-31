@@ -175,7 +175,7 @@ export default function Create() {
     }
 
     const finalSubmit = () => {
-        if (allItems.length > 0 && totalValue){
+        if (allItems.length > 0 && totalValue && finalAmount){
             setLoad(true)
             let header = {
                 invoiceNo : invoiceNo,
@@ -224,7 +224,7 @@ export default function Create() {
                         setAllItems('');
                         setTotalValue(0);
                         setFinalDiscountValue(0);
-                        setFinalDiscountCriteria('');
+                        setFinalDiscountCriteria('percent');
                         finalAmount = 0;
                     }else{
                         toast.error(data.message);

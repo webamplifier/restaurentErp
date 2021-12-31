@@ -250,7 +250,7 @@ export default function Edit() {
     }
 
     const finalSubmit = () => {
-        if (allItems.length > 0 && totalValue) {
+        if (allItems.length > 0 && totalValue && finalAmount) {
             setLoad(true)
             let header = {
                 invoiceNo: invoiceNo,
@@ -291,7 +291,7 @@ export default function Edit() {
                     const data = await response.json();
                     setLoad(false)
                     if (data.status === 200) {
-                        history.push('/#/create/sales')
+                        return window.history.back();
                     } else {
                         toast.error(data.message);
                     }

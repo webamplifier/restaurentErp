@@ -51,9 +51,9 @@ export default function SalesReport() {
                             const data = await response.json();
                             setLoad(false)
                             if (data.status === 200) {
-                                setSalesList(data.list.map((item,index)=>{
+                                setSalesList(data.list.map((item)=>{
                                     return{
-                                      '#': index+1,
+                                      '#': item.num_row,
                                       'id': item.id,
                                       'invoice_number': item.invoice_number,
                                       'sale_date':item.sale_date,
@@ -100,9 +100,9 @@ export default function SalesReport() {
                     const data = await response.json();
                     setLoad(false)
                     if (data.status == 200) {
-                        setSalesList(data.list.map((item,index)=>{
+                        setSalesList(data.list.map((item)=>{
                             return{
-                              '#': index+1,
+                              '#': item.num_row,
                               'id': item.id,
                               'invoice_number': item.invoice_number,
                               'sale_date':item.sale_date,
@@ -152,9 +152,9 @@ export default function SalesReport() {
                         const data = await response.json();
                         setLoad(false)
                         if (data.status === 200) {
-                            setSalesList(data.list.map((item,index)=>{
+                            setSalesList(data.list.map((item)=>{
                                 return{
-                                  '#': index+1,
+                                  '#': item.num_row,
                                   'id': item.id,
                                   'invoice_number': item.invoice_number,
                                   'sale_date':item.sale_date,
@@ -268,7 +268,7 @@ export default function SalesReport() {
             if (data.status === 200) {
                 setSalesList(data.list.map((item,index)=>{
                     return{
-                      '#': index+1,
+                      '#': item.num_row,
                       'id': item.id,
                       'invoice_number': item.invoice_number,
                       'sale_date':item.sale_date,
@@ -312,9 +312,9 @@ export default function SalesReport() {
                 const data = await response.json();
                 setLoad(false)
                 if (data.status === 200) {
-                    setSalesList(data.list.map((item,index)=>{
+                    setSalesList(data.list.map((item)=>{
                         return{
-                          '#': index+1,
+                          '#': item.num_row,
                           'id': item.id,
                           'invoice_number': item.invoice_number,
                           'sale_date':item.sale_date,
