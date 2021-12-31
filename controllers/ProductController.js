@@ -119,6 +119,7 @@ router.fetchProductList = async(req,res)=>{
     let default_query = "select * from products";
     let sort = "";
     let total_records = "";
+    let offset = 0
 
     let count_query = "select COUNT(*) as total from products";
     
@@ -132,10 +133,10 @@ router.fetchProductList = async(req,res)=>{
         filter_query += ` and (products.name LIKE '%${req.query.filter_value}%' or products.price LIKE '%${req.query.filter_value}%' or products.stock_quantity LIKE '%${req.query.filter_value}%')`
     }
     
-    let order_by_query = " order by products.id desc";
+    let order_by_query = " order by products.id desc LIMIT 10 offset 0";
 
     if (req.query.page_number && req.query.page_size) {
-        let offset = (req.query.page_number - 1) * (req.query.page_size);
+        offset = (req.query.page_number - 1) * (req.query.page_size);
         order_by_query = ` order by products.id desc LIMIT ${req.query.page_size} offset ${offset}`;
         if (sort) {
             order_by_query = ` order by products.${sort.column} ${sort.order} LIMIT ${req.query.page_size} offset ${offset}`;

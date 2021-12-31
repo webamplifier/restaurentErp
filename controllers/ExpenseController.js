@@ -171,7 +171,7 @@ router.fetchExpenseList = async(req,res)=>{
         filter_query += ` and ((expenses.expense_date BETWEEN '${req.query.from}' AND '${req.query.to}') or (expenses.expense_date BETWEEN '${date_from}' AND '${date_to}'))`
     }
     
-    let order_by_query = " order by expenses.id desc";
+    let order_by_query = " order by expenses.id desc LIMIT 10 offset 0";
 
     if (req.query.page_number && req.query.page_size) {
         let offset = (req.query.page_number - 1) * (req.query.page_size);
